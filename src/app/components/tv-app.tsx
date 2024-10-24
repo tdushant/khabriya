@@ -78,6 +78,8 @@ export default function TVApp() {
         selectedCategory === 'all' || channel.category === selectedCategory
     )
 
+    console.log(currentChannel);
+    console.log(currentVideo);
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col">
             {/* Header */}
