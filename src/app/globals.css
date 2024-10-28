@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Rubik", Sans-serif;
 }
 
 @layer base {
@@ -33,6 +33,14 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --e-global-color-primary: #9900CC;
+    --e-global-color-secondary: #54595F;
+    --e-global-color-accent: #BC18F3;
+    --heading-text-color: #d50c71;
+    --body-text-color: #636363;
+    --paragraph-text-color: #757F95;
+    --primary-color: #E40876;
+    --secondary-color: #ce3cff;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -68,5 +76,39 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    background-image: linear-gradient(39deg, #070124 0%, #4E073C 100%);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.75;
+    color: var(--body-text-color);
+  }
+}
+
+@layer components {
+  .btn {
+    user-select: none;
+    -moz-user-select: none;
+    background: var(--primary-color) none repeat scroll 0 0;
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.2rem;
+    margin-bottom: 0;
+    padding: 20px 34px;
+    text-align: center;
+    text-transform: uppercase;
+    touch-action: manipulation;
+    transition: all 0.3s ease 0s;
+    vertical-align: middle;
+    white-space: break-spaces;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
   }
 }

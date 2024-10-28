@@ -1,4 +1,5 @@
 'use client'
+
 import { useState, useCallback, useEffect, SetStateAction } from 'react'
 import { MediaPlayer, MediaProvider } from '@vidstack/react'
 import '@vidstack/react/player/styles/default/theme.css';
@@ -11,6 +12,7 @@ import Image from 'next/image'
 import useEmblaCarousel from 'embla-carousel-react'
 import artimg from "../../../public/placeholder.svg";
 import logoImg from "../../../public/logo.svg";
+
 const channels = [
     { id: 1, name: 'News 24/7', description: 'Round-the-clock news coverage', icon: './placeholder.svg', category: 'News', videoUrl: 'https://example.com/news24-7.mp4' },
     { id: 2, name: 'Movie Central', description: 'Latest blockbusters and classics', icon: './placeholder.svg', category: 'Movies', videoUrl: 'https://example.com/movie-central.mp4' },
@@ -39,7 +41,6 @@ const categories = [
     'Documentaries', 'Comedy', 'Health', 'Travel', 'Fashion', 'E-Sports', 
     'Nature', 'History', 'DIY'
 ];
-
 
 export default function TVApp() {
     const [currentVideo, setCurrentVideo] = useState(channels[0].videoUrl)
@@ -76,22 +77,21 @@ export default function TVApp() {
 
     const filteredChannels = channels.filter(channel =>
         selectedCategory === 'all' || channel.category === selectedCategory
-    )
+    ) 
 
-    console.log(currentChannel);
-    console.log(currentVideo);
     return (
-        <div className="min-h-screen bg-background text-foreground flex flex-col">
+        <div className="min-h-screen text-foreground flex flex-col">
             {/* Header */}
-            <header className="flex justify-between items-center p-4 border-b bg-gray-200">
+            <header className="flex justify-between items-center p-4 border-b bg-[var(--e-global-color-primary)] text-white">
                 <div className="flex items-center">
                     <Image src={logoImg} alt="TV App Logo" width={100} height={40} />
                 </div>
-                <Button variant="outline">
+                <Button variant="outline" className="btn bg-[var(--primary-color)] text-white hover:bg-[var(--secondary-color)]">
                     <User className="mr-2 h-4 w-4" />
                     My Account
                 </Button>
             </header>
+
             {/* Main content area */}
             <div className="flex flex-col md:flex-row h-[calc(100vh-80px)]">
                 {/* Video Player (left side, 60%) */}
@@ -112,21 +112,24 @@ export default function TVApp() {
                             <DefaultVideoLayout thumbnails="https://image.mux.com/v69RSHhFelSm4701snP22dYz2jICy4E4FUyk02rW4gxRM/thumbnail.webp" icons={defaultLayoutIcons} />
                         </MediaPlayer>
                     </div>
-                    {/* Category buttons at the top */}
+
+                    {/* Category buttons */}
                     <div className="p-4 border-b flex flex-wrap gap-2 justify-center items-center">
                         {categories.map((category) => (
                             <Button
                                 key={category}
                                 variant={selectedCategory === category ? "default" : "outline"}
                                 onClick={() => handleCategoryChange(category)}
+                                className={`btn ${selectedCategory === category ? 
+                                    "bg-[var(--primary-color)] text-white" :
+                                    "text-[var(--primary-color)] hover:bg-[var(--secondary-color)] hover:text-white"}`}
                             >
                                 {category}
                             </Button>
                         ))}
                     </div>
 
-                    {/* <h2 className="text-xl font-semibold mt-2">Now Playing: {currentChannel}</h2> */}
-                    <h2 className="text-xl font-semibold mt-2 text-center underline">Quick Watch</h2>
+                    <h2 className="text-xl font-semibold mt-2 text-center underline text-[var(--heading-text-color)]">Quick Watch</h2>
 
                     {/* Horizontal channel slider */}
                     <div className="mt-4 relative">
@@ -142,11 +145,11 @@ export default function TVApp() {
                                                 height={100}
                                                 className="rounded-lg mb-2 mx-auto"
                                             />
-                                            <p className="font-medium text-sm truncate">{channel.name}</p>
+                                            <p className="font-medium text-sm truncate text-white">{channel.name}</p>
                                             <Button
                                                 size="sm"
                                                 onClick={() => playChannel(channel)}
-                                                className="mt-2"
+                                                className="btn mt-2 bg-[var(--primary-color)] text-white hover:bg-[var(--secondary-color)]"
                                             >
                                                 <PlayCircle className="h-4 w-4 mr-1" />
                                                 Play
@@ -159,7 +162,7 @@ export default function TVApp() {
                         <Button
                             size="icon"
                             variant="outline"
-                            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2"
+                            className="btn absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-[var(--primary-color)] text-white hover:bg-[var(--secondary-color)]"
                             onClick={scrollPrev}
                             disabled={!canScrollPrev}
                         >
@@ -169,7 +172,7 @@ export default function TVApp() {
                         <Button
                             size="icon"
                             variant="outline"
-                            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2"
+                            className="btn absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-[var(--primary-color)] text-white hover:bg-[var(--secondary-color)]"
                             onClick={scrollNext}
                             disabled={!canScrollNext}
                         >
@@ -181,18 +184,21 @@ export default function TVApp() {
 
                 {/* Channel List (right side, 40%) */}
                 <div className="w-full md:w-2/5 p-4 border-l">
-                    <h2 className="text-2xl font-bold mb-4">{selectedCategory === 'all' ? 'All Channels' : `${selectedCategory} Channels`}</h2>
+                    <h2 className="text-2xl font-bold mb-4 text-[var(--heading-text-color)]">
+                        {selectedCategory === 'all' ? 'All Channels' : `${selectedCategory} Channels`}
+                    </h2>
                     <ScrollArea className="h-[calc(100vh-180px)]">
                         {filteredChannels.map((channel) => (
-                            <div key={channel.id} className="flex items-center mb-4 p-2 hover:bg-accent rounded-lg">
+                            <div key={channel.id} className="flex items-center mb-4 p-2 hover:bg-[var(--secondary-color)] hover:text-white rounded-lg cursor-pointer">
                                 <Image src={artimg} alt={channel.name} width={50} height={50} className="rounded-full mr-4" />
                                 <div className="flex-grow">
-                                    <h3 className="font-semibold">{channel.name}</h3>
-                                    <p className="text-sm text-muted-foreground">{channel.description}</p>
+                                    <h3 className="font-semibold text-white">{channel.name}</h3>
+                                    <p className="text-sm text-[var(--paragraph-text-color)]">{channel.description}</p>
                                 </div>
                                 <Button
                                     size="sm"
                                     onClick={() => playChannel(channel)}
+                                    className="btn bg-[var(--primary-color)] text-white hover:bg-[var(--secondary-color)]"
                                 >
                                     <PlayCircle className="h-5 w-5 mr-1" />
                                     Play
