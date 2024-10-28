@@ -24,7 +24,7 @@ body {
     --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
+    /* --border: 240 5.9% 90%; */
     --input: 240 5.9% 90%;
     --ring: 240 10% 3.9%;
     --chart-1: 12 76% 61%;
@@ -33,14 +33,14 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-    --e-global-color-primary: #9900CC;
+    --e-global-color-primary: #31073f;
     --e-global-color-secondary: #54595F;
     --e-global-color-accent: #BC18F3;
     --heading-text-color: #d50c71;
     --body-text-color: #636363;
     --paragraph-text-color: #757F95;
     --primary-color: #E40876;
-    --secondary-color: #ce3cff;
+    --secondary-color: #000000;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -59,7 +59,7 @@ body {
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
+    /* --border: 240 3.7% 15.9%; */
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
     --chart-1: 220 70% 50%;
@@ -71,9 +71,7 @@ body {
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+
   body {
     @apply bg-background text-foreground;
     background-image: linear-gradient(39deg, #070124 0%, #4E073C 100%);

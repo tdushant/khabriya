@@ -82,7 +82,7 @@ export default function TVApp() {
     return (
         <div className="min-h-screen text-foreground flex flex-col">
             {/* Header */}
-            <header className="flex justify-between items-center p-4 border-b bg-[var(--e-global-color-primary)] text-white">
+            <header className="flex justify-between items-center p-4 bg-[var(--e-global-color-primary)] text-white">
                 <div className="flex items-center">
                     <Image src={logoImg} alt="TV App Logo" width={100} height={40} />
                 </div>
@@ -96,6 +96,7 @@ export default function TVApp() {
             <div className="flex flex-col md:flex-row h-[calc(100vh-80px)]">
                 {/* Video Player (left side, 60%) */}
                 <div className="w-full md:w-3/5 p-4 flex flex-col">
+
                     <div className="flex-grow">
                         <MediaPlayer
                             title="Big Buck Bunny Live Stream"
@@ -113,21 +114,6 @@ export default function TVApp() {
                         </MediaPlayer>
                     </div>
 
-                    {/* Category buttons */}
-                    <div className="p-4 border-b flex flex-wrap gap-2 justify-center items-center">
-                        {categories.map((category) => (
-                            <Button
-                                key={category}
-                                variant={selectedCategory === category ? "default" : "outline"}
-                                onClick={() => handleCategoryChange(category)}
-                                className={`btn ${selectedCategory === category ? 
-                                    "bg-[var(--primary-color)] text-white" :
-                                    "text-[var(--primary-color)] hover:bg-[var(--secondary-color)] hover:text-white"}`}
-                            >
-                                {category}
-                            </Button>
-                        ))}
-                    </div>
 
                     <h2 className="text-xl font-semibold mt-2 text-center underline text-[var(--heading-text-color)]">Quick Watch</h2>
 
@@ -159,6 +145,23 @@ export default function TVApp() {
                                 ))}
                             </div>
                         </div>
+
+                    {/* Category buttons */}
+                    <div className="p-4 flex flex-wrap gap-2 justify-center items-center">
+                        {categories.map((category) => (
+                            <Button
+                                key={category}
+                                variant={selectedCategory === category ? "default" : "outline"}
+                                onClick={() => handleCategoryChange(category)}
+                                className={`btn ${selectedCategory === category ? 
+                                    "bg-[var(--primary-color)] text-white" :
+                                    "text-[var(--primary-color)] hover:bg-[var(--secondary-color)] hover:text-white"}`}
+                            >
+                                {category}
+                            </Button>
+                        ))}
+                    </div>
+                    
                         <Button
                             size="icon"
                             variant="outline"
@@ -183,7 +186,7 @@ export default function TVApp() {
                 </div>
 
                 {/* Channel List (right side, 40%) */}
-                <div className="w-full md:w-2/5 p-4 border-l">
+                <div className="w-full md:w-2/5 p-4">
                     <h2 className="text-2xl font-bold mb-4 text-[var(--heading-text-color)]">
                         {selectedCategory === 'all' ? 'All Channels' : `${selectedCategory} Channels`}
                     </h2>
