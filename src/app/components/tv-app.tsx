@@ -212,7 +212,7 @@ export default function TVApp() {
     }, [emblaApi, onSelect])
 
     const playChannel = useCallback((channel: {
-        channel(channel_name:string): unknown; videoUrl: SetStateAction<string>; name: SetStateAction<string>;
+        channel(channel_name:string,stream_url:string): unknown; videoUrl: SetStateAction<string>; name: SetStateAction<string>;
     }) => {
         setCurrentVideo(channel.stream_url);
         setCurrentChannel(channel.channel_name);
