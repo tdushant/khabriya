@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { PlayCircle, ChevronLeft, ChevronRight, User } from 'lucide-react'
 import Image from 'next/image'
 import useEmblaCarousel from 'embla-carousel-react'
-import artimg from "../../../public/placeholder.svg";
+// import artimg from "../../../public/placeholder.svg";
 import logoImg from "../../../public/logo.svg";
 import axios from 'axios';
 
@@ -38,7 +38,7 @@ export default function TVApp() {
     const API_AUTH_TOKEN = process.env.NEXT_PUBLIC_API_AUTH_TOKEN;
     const [channels2, setChannels2] = useState([])
     const [Categories, setCategories] = useState([])
-    const [account, setAccountDetails] = useState([])
+    // const [account, setAccountDetails] = useState([])
 
     const [AllChannels, SetAllChannels] = useState([])
     console.log(AllChannels, "AllChannelsAllChannelsAllChannelsAllChannelsAllChannelsAllChannels");
@@ -112,28 +112,28 @@ export default function TVApp() {
     }, [fetchChannels]);
 
     // To Fetch the Account Details
-    const getAccount = useCallback(async () => {
-        try {
-            const response = await axios.post(
-                `${API_BASE_URL}/account-info`,
-                {},
-                {
-                    headers: {
-                        'Authorization': `Bearer ${API_AUTH_TOKEN}`,
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json',
-                    },
-                }
-            );
-            setAccountDetails(response.data.data);
-        } catch (error) {
-            console.error('Error fetching Account Details:', error);
-        }
-    }, []);
+    // const getAccount = useCallback(async () => {
+    //     try {
+    //         const response = await axios.post(
+    //             `${API_BASE_URL}/account-info`,
+    //             {},
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${API_AUTH_TOKEN}`,
+    //                     'Content-Type': 'application/json',
+    //                     Accept: 'application/json',
+    //                 },
+    //             }
+    //         );
+    //          setAccountDetails(response.data.data);
+    //     } catch (error) {
+    //         console.error('Error fetching Account Details:', error);
+    //     }
+    // }, []);
 
-    useEffect(() => {
-        getAccount();
-    }, [getAccount]);
+    // useEffect(() => {
+    //     getAccount();
+    // }, [getAccount]);
 
     //------------------------------------------------------//
     //channel categories
@@ -212,7 +212,7 @@ export default function TVApp() {
     }, [emblaApi, onSelect])
 
     const playChannel = useCallback((channel: {
-        channel(channel_name: any): unknown; videoUrl: SetStateAction<string>; name: SetStateAction<string>;
+        channel(channel_name:string): unknown; videoUrl: SetStateAction<string>; name: SetStateAction<string>;
     }) => {
         setCurrentVideo(channel.stream_url);
         setCurrentChannel(channel.channel_name);
