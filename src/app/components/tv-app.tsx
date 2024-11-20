@@ -12,45 +12,19 @@ import Image from 'next/image'
 import useEmblaCarousel from 'embla-carousel-react'
 import artimg from "../../../public/placeholder.svg";
 import logoImg from "../../../public/logo.svg";
-
-const channels = [
-    { id: 1, name: 'News 24/7', description: 'Round-the-clock news coverage', icon: './placeholder.svg', category: 'News', videoUrl: 'https://example.com/news24-7.mp4' },
-    { id: 2, name: 'Movie Central', description: 'Latest blockbusters and classics', icon: './placeholder.svg', category: 'Movies', videoUrl: 'https://example.com/movie-central.mp4' },
-    { id: 3, name: 'Sports Zone', description: 'Live sports and analysis', icon: './placeholder.svg', category: 'Sports', videoUrl: 'https://example.com/sports-zone.mp4' },
-    { id: 4, name: 'Music Hits', description: 'Top charts and music videos', icon: './placeholder.svg', category: 'Music', videoUrl: 'https://example.com/music-hits.mp4' },
-    { id: 5, name: 'Kids Fun', description: 'Educational and entertaining content for children', icon: './placeholder.svg', category: 'Kids', videoUrl: 'https://example.com/kids-fun.mp4' },
-    { id: 6, name: 'Lifestyle Today', description: 'Fashion, food, and travel', icon: './placeholder.svg', category: 'Lifestyle', videoUrl: 'https://example.com/lifestyle-today.mp4' },
-    { id: 7, name: 'Tech Talk', description: 'Latest in technology and gadgets', icon: './placeholder.svg', category: 'News', videoUrl: 'https://example.com/tech-talk.mp4' },
-    { id: 8, name: 'Nature Explorer', description: 'Documentaries about wildlife and nature', icon: './placeholder.svg', category: 'Lifestyle', videoUrl: 'https://example.com/nature-explorer.mp4' },
-    { id: 9, name: 'Cooking Master', description: 'Culinary shows and recipes', icon: './placeholder.svg', category: 'Lifestyle', videoUrl: 'https://example.com/cooking-master.mp4' },
-    { id: 10, name: 'Sci-Fi Network', description: 'Science fiction movies and series', icon: './placeholder.svg', category: 'Movies', videoUrl: 'https://example.com/scifi-network.mp4' },
-    { id: 11, name: 'Documentary Hub', description: 'Exclusive documentaries from around the world', icon: './placeholder.svg', category: 'Documentaries', videoUrl: 'https://example.com/documentary-hub.mp4' },
-    { id: 12, name: 'Comedy Central', description: 'Stand-up, sitcoms, and funny moments', icon: './placeholder.svg', category: 'Comedy', videoUrl: 'https://example.com/comedy-central.mp4' },
-    { id: 13, name: 'Fitness & Health', description: 'Workout routines and health tips', icon: './placeholder.svg', category: 'Health', videoUrl: 'https://example.com/fitness-health.mp4' },
-    { id: 14, name: 'Travel Diaries', description: 'Travel guides and destination features', icon: './placeholder.svg', category: 'Travel', videoUrl: 'https://example.com/travel-diaries.mp4' },
-    { id: 15, name: 'Fashion & Style', description: 'Latest fashion trends and beauty tips', icon: './placeholder.svg', category: 'Fashion', videoUrl: 'https://example.com/fashion-style.mp4' },
-    { id: 16, name: 'E-Sports Live', description: 'Live streams and highlights of E-Sports events', icon: './placeholder.svg', category: 'E-Sports', videoUrl: 'https://example.com/esports-live.mp4' },
-    { id: 17, name: 'Classic Movies', description: 'Timeless classics and vintage cinema', icon: './placeholder.svg', category: 'Movies', videoUrl: 'https://example.com/classic-movies.mp4' },
-    { id: 18, name: 'Animal Planet', description: 'Wildlife and animal documentaries', icon: './placeholder.svg', category: 'Nature', videoUrl: 'https://example.com/animal-planet.mp4' },
-    { id: 19, name: 'History Vault', description: 'Dive deep into history with insightful content', icon: './placeholder.svg', category: 'History', videoUrl: 'https://example.com/history-vault.mp4' },
-    { id: 20, name: 'DIY Network', description: 'Do it yourself tips and tricks for everything', icon: './placeholder.svg', category: 'DIY', videoUrl: 'https://example.com/diy-network.mp4' }
-];
-
-const categories = [
-    'All', 'News', 'Movies', 'Sports', 'Music', 'Kids', 'Lifestyle', 
-    'Documentaries', 'Comedy', 'Health', 'Travel', 'Fashion', 'E-Sports', 
-    'Nature', 'History', 'DIY'
-];
+import axios from 'axios';
 
 export default function TVApp() {
-    const [currentVideo, setCurrentVideo] = useState(channels[0].videoUrl)
-    const [currentChannel, setCurrentChannel] = useState(channels[0].name)
+    const [currentVideo, setCurrentVideo] = useState('');
+    const [currentChannel, setCurrentChannel] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all')
-    const [emblaRef, emblaApi] = useEmblaCarousel({ slidesToScroll: 4, align: 'start' })
+
+    console.log(selectedCategory,"selectedCategoryselectedCategoryselectedCategoryselectedCategoryselectedCategoryselectedCategoryselectedCategoryselectedCategoryselectedCategory")
 
     const [canScrollPrev, setCanScrollPrev] = useState(false)
     const [canScrollNext, setCanScrollNext] = useState(true)
 
+    const [emblaRef, emblaApi] = useEmblaCarousel({ slidesToScroll: 4, align: 'start' })
     const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
     const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
 
@@ -60,24 +34,196 @@ export default function TVApp() {
         setCanScrollNext(emblaApi.canScrollNext())
     }, [emblaApi])
 
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const API_AUTH_TOKEN = process.env.NEXT_PUBLIC_API_AUTH_TOKEN;
+    const [channels2, setChannels2] = useState([])
+    const [Categories, setCategories] = useState([])
+    const [account, setAccountDetails] = useState([])
+
+    const [AllChannels, SetAllChannels] = useState([])
+    console.log(AllChannels, "AllChannelsAllChannelsAllChannelsAllChannelsAllChannelsAllChannels");
+
+
+    // console.log(currentChannel, "currentchannel", channels2);
+    // const matchingChannel = channels2.find(
+    //     (channel) => channel.channel_name === currentChannel
+    //   );
+
+    //   const deeplinks = useCallback(async (matchingChannel) => {
+    //     if (!matchingChannel?.id) {
+    //         console.error('matchingChannel or id is not defined');
+    //         return;
+    //     }
+    //     console.log();
+
+
+    //     try {
+    //         const response = await axios.post(
+    //             `${API_BASE_URL}/deep-link`,
+    //             { id: matchingChannel.id },
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${API_AUTH_TOKEN}`,
+    //                     'Content-Type': 'application/json',
+    //                     Accept: 'application/json',
+    //                 },
+    //             }
+    //         );
+    //         console.log('API Response:', response.data);
+    //     } catch (error) {
+    //         console.error('Error fetching deep links:', error);
+    //     }
+    // }, []);
+
+    // useEffect(() => {
+    //     if (matchingChannel) {
+    //         deeplinks(matchingChannel);
+    //     }
+    // }, [currentChannel, matchingChannel, deeplinks]);
+
+
+    // To Fetch the quick-channels
+    const fetchChannels = useCallback(async () => {
+        try {
+            const response = await axios.post(
+                `${API_BASE_URL}/quick-channels`,
+                {},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${API_AUTH_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
+                }
+            );
+            setChannels2(response.data.data);
+            if (response.data.data.length > 0) {
+                setCurrentVideo(response.data.data[0].stream_url);
+                setCurrentChannel(response.data.data[0].channel_name);
+            }
+
+        } catch (error) {
+            console.error('Error fetching channels:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchChannels();
+    }, [fetchChannels]);
+
+    // To Fetch the Account Details
+    const getAccount = useCallback(async () => {
+        try {
+            const response = await axios.post(
+                `${API_BASE_URL}/account-info`,
+                {},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${API_AUTH_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
+                }
+            );
+            setAccountDetails(response.data.data);
+        } catch (error) {
+            console.error('Error fetching Account Details:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        getAccount();
+    }, [getAccount]);
+
+    //------------------------------------------------------//
+    //channel categories
+    const fetchcategories = useCallback(async () => {
+        try {
+            const response = await axios.post(
+                `${API_BASE_URL}/languages`,
+                {},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${API_AUTH_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
+                }
+            );
+            setCategories(response.data.data);
+        } catch (error) {
+            console.error('Error fetching Categories:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchcategories();
+    }, [fetchcategories]);
+
+
+    const handleCategoryChange = useCallback((category: string) => {
+        console.log(category,"category");
+        setSelectedCategory(category)
+
+    }, [])
+    //------------------------------------------------------//
+
+    //------------------------------------------------------//
+    // Allchannels
+    const fetchAllChannels = useCallback(async () => {
+        try {
+            const response = await axios.post(
+                `${API_BASE_URL}/channels`,
+                {
+                    "language" : "Punjabi"
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${API_AUTH_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
+                }
+            );
+            
+            console.log(response.data,"SetAllChannelsSetAllChannelsSetAllChannelsSetAllChannelsSetAllChannels");
+            
+            SetAllChannels(response.data.data);
+            if (response.data.data.length > 0) {
+                setCurrentVideo(response.data.data[0].stream_url);
+                setCurrentChannel(response.data.data[0].channel_name);
+            }
+
+        } catch (error) {
+            console.error('Error fetching channels:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchAllChannels();
+    }, [fetchAllChannels,selectedCategory]);
+    //------------------------------------------------------//
+
+
     useEffect(() => {
         if (!emblaApi) return
         onSelect()
         emblaApi.on('select', onSelect)
     }, [emblaApi, onSelect])
 
-    const playChannel = useCallback((channel: { videoUrl: SetStateAction<string>; name: SetStateAction<string>; }) => {
-        setCurrentVideo(channel.videoUrl)
-        setCurrentChannel(channel.name)
+    const playChannel = useCallback((channel: {
+        channel(channel_name: any): unknown; videoUrl: SetStateAction<string>; name: SetStateAction<string>;
+    }) => {
+        setCurrentVideo(channel.stream_url);
+        setCurrentChannel(channel.channel_name);
     }, [])
 
-    const handleCategoryChange = useCallback((category: string) => {
-        setSelectedCategory(category)
-    }, [])
+    const filteredChannels = channels2.filter(channel =>
+        selectedCategory === 'all' || channel.add_language === selectedCategory
+    )
 
-    const filteredChannels = channels.filter(channel =>
-        selectedCategory === 'all' || channel.category === selectedCategory
-    ) 
+    console.log(filteredChannels, "filteredChannelsfilteredChannelsfilteredChannels");
+
 
     return (
         <div className="min-h-screen text-foreground flex flex-col">
@@ -99,8 +245,8 @@ export default function TVApp() {
 
                     <div className="flex-grow">
                         <MediaPlayer
-                            title="Big Buck Bunny Live Stream"
-                            src="https://stream.mux.com/v69RSHhFelSm4701snP22dYz2jICy4E4FUyk02rW4gxRM.m3u8"
+                            title={currentChannel}
+                            src={currentVideo}
                             poster="https://image.mux.com/v69RSHhFelSm4701snP22dYz2jICy4E4FUyk02rW4gxRM/thumbnail.webp?time=30"
                             streamType="live"
                             viewType="video"
@@ -121,17 +267,22 @@ export default function TVApp() {
                     <div className="mt-4 relative">
                         <div className="overflow-hidden" ref={emblaRef}>
                             <div className="flex">
-                                {channels.map((channel) => (
+                                {channels2.map((channel) => (
                                     <div key={channel.id} className="flex-[0_0_25%] min-w-0 px-2">
                                         <div className="p-2 text-center">
                                             <Image
-                                                src={artimg}
-                                                alt={channel.name}
+                                                src={channel.image}
+                                                alt={channel.channel_name}
                                                 width={100}
                                                 height={100}
                                                 className="rounded-lg mb-2 mx-auto"
+                                                style={{
+                                                    objectFit: 'cover',
+                                                    width: '200px',
+                                                    height: '100px',
+                                                }}
                                             />
-                                            <p className="font-medium text-sm truncate text-white">{channel.name}</p>
+                                            <p className="font-medium text-sm truncate text-white">{channel.channel_name}</p>
                                             <Button
                                                 size="sm"
                                                 onClick={() => playChannel(channel)}
@@ -146,22 +297,22 @@ export default function TVApp() {
                             </div>
                         </div>
 
-                    {/* Category buttons */}
-                    <div className="p-4 flex flex-wrap gap-2 justify-center items-center">
-                        {categories.map((category) => (
-                            <Button
-                                key={category}
-                                variant={selectedCategory === category ? "default" : "outline"}
-                                onClick={() => handleCategoryChange(category)}
-                                className={`btn ${selectedCategory === category ? 
-                                    "bg-[var(--primary-color)] text-white" :
-                                    "text-[var(--primary-color)] hover:bg-[var(--secondary-color)] hover:text-white"}`}
-                            >
-                                {category}
-                            </Button>
-                        ))}
-                    </div>
-                    
+                        {/* Category buttons */}
+                        <div className="p-4 flex flex-wrap gap-2 justify-center items-center">
+                            {Categories.map((category) => (
+                                <Button
+                                    key={category.id}
+                                    variant={selectedCategory === category ? "default" : "outline"}
+                                    onClick={() => handleCategoryChange(category.insert_language)}
+                                    className={`btn ${selectedCategory === category.insert_language ?
+                                        "bg-[var(--primary-color)] text-white" :
+                                        "text-[var(--primary-color)] hover:bg-[var(--secondary-color)] hover:text-white"}`}
+                                >
+                                    {category.insert_language}
+                                </Button>
+                            ))}
+                        </div>
+
                         <Button
                             size="icon"
                             variant="outline"
@@ -191,12 +342,12 @@ export default function TVApp() {
                         {selectedCategory === 'all' ? 'All Channels' : `${selectedCategory} Channels`}
                     </h2>
                     <ScrollArea className="h-[calc(100vh-180px)]">
-                        {filteredChannels.map((channel) => (
+                        {AllChannels.map((channel) => (
                             <div key={channel.id} className="flex items-center mb-4 p-2 hover:bg-[var(--secondary-color)] hover:text-white rounded-lg cursor-pointer">
-                                <Image src={artimg} alt={channel.name} width={50} height={50} className="rounded-full mr-4" />
+                                <Image src={channel.image} alt={channel.channel_name} width={50} height={50} className="rounded-full mr-4" />
                                 <div className="flex-grow">
-                                    <h3 className="font-semibold text-white">{channel.name}</h3>
-                                    <p className="text-sm text-[var(--paragraph-text-color)]">{channel.description}</p>
+                                    <h3 className="font-semibold text-white">{channel.channel_name}</h3>
+                                    <p className="text-sm text-[var(--paragraph-text-color)]">{channel.plan_name}</p>
                                 </div>
                                 <Button
                                     size="sm"
