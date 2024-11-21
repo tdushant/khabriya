@@ -10,46 +10,135 @@ import { Button } from '@/components/ui/button'
 import { PlayCircle, ChevronLeft, ChevronRight, User } from 'lucide-react'
 import Image from 'next/image'
 import useEmblaCarousel from 'embla-carousel-react'
-// import artimg from "../../../public/placeholder.svg";
 import logoImg from "../../../public/logo.svg";
 import axios from 'axios';
 
+
 export default function TVApp() {
-    const [currentVideo, setCurrentVideo] = useState('');
-    const [currentChannel, setCurrentChannel] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('all')
-
-
-
     const [canScrollPrev, setCanScrollPrev] = useState(false)
     const [canScrollNext, setCanScrollNext] = useState(true)
-
     const [emblaRef, emblaApi] = useEmblaCarousel({ slidesToScroll: 4, align: 'start' })
     const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
     const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
-
     const onSelect = useCallback(() => {
         if (!emblaApi) return
         setCanScrollPrev(emblaApi.canScrollPrev())
         setCanScrollNext(emblaApi.canScrollNext())
     }, [emblaApi])
 
+    const [currentVideo, setCurrentVideo] = useState('')
+    const [currentChannel, setCurrentChannel] = useState('')
+    const [selectedChannelCategory, setSelectedChannelCategory] = useState('Hindi')
+    const [quick_watch, setquick_watch] = useState([])
+    const [Categories, setCategories] = useState([])
+    const [account, setAccountDetails] = useState([])
+    const [AllChannels, SetAllChannels] = useState([])
+
     // const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
     // const API_AUTH_TOKEN = process.env.NEXT_PUBLIC_API_AUTH_TOKEN;
-
     const API_BASE_URL = 'https://api-houston.khabriya.in/api/v3';
     const API_AUTH_TOKEN = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjFmZGQ3YjMzLWY2ZGItNDNlOC05NmM0LTFkNDMyYjc2NDI4NCIsIm1hY19hZGRyZXNzIjoibWFjX2FkZHJlc3MiLCJpYXQiOjE3MzE5NDE0NTF9.RrgsywJ4zNcTfER0Kd48bQZWCQoKO3GOmqYF0PBhPfyc1MOoXwTXVSQzYV1k-60Ch3sD8lWMXFOtC9rFIzOKSFD8hpzoQSzG07FpOLdtgYASuD49pBCk-1EsEOAArX3dWoumHe0C52Uw-NvABdDM1lLIMcQZxsh1DTA1SxMZUfGuPX5oMmdXdFKqyRX0LX8Xa_aDfvA7dhvyPsdqxyMXn_ieeJK9BzzW5NJYKW68gwpOAF6yjzJI-lDYQHKBeqsXSXEpL_vaESdLnZT-gBgvzuC6GgoMCwO8YVu99X7OWc-dDYvS35JJ9Oq0WePm-WBbRHe61iUD4UmsFZS4SCO_3A';
 
-    const [channels2, setChannels2] = useState([])
-    const [Categories, setCategories] = useState([])
-    const [account, setAccountDetails] = useState([])
+    useEffect(() => {
+        if (!emblaApi) return
+        onSelect()
+        emblaApi.on('select', onSelect)
+    }, [emblaApi, onSelect])
 
-    const [AllChannels, SetAllChannels] = useState([])
-    console.log(AllChannels, "AllChannelsAllChannelsAllChannelsAllChannelsAllChannelsAllChannels");
+    //------------------------Quick-channels Start----------------------------//
+    const ListQuickChannels = useCallback(async () => {
+        try {
+            const response = await axios.post(
+                `${API_BASE_URL}/quick-channels`,
+                {},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${API_AUTH_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
+                }
+            );
+            setquick_watch(response.data.data);
+            // if (response.data.data.length > 0) {
+            //     setCurrentVideo(response.data.data[0].stream_url);
+            //     setCurrentChannel(response.data.data[0].channel_name);
+            // }
 
+        } catch (error) {
+            console.error('Error fetching channels:', error);
+        }
+    }, []);
 
-    // console.log(currentChannel, "currentchannel", channels2);
-    // const matchingChannel = channels2.find(
+    useEffect(() => {
+        ListQuickChannels();
+    }, [ListQuickChannels]);
+    //------------------------Quick-channels End----------------------------//
+
+    //-----------------------Channel categories start-------------------------//
+    const ChannelCategories = useCallback(async () => {
+        try {
+            const response = await axios.post(
+                `${API_BASE_URL}/languages`,
+                {},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${API_AUTH_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
+                }
+            );
+            setCategories(response.data.data);
+        } catch (error) {
+            console.error('Error fetching Categories:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        ChannelCategories();
+    }, [ChannelCategories]);
+
+    const handleChannelCategoryChange = useCallback((category: string) => {
+        setSelectedChannelCategory(category)
+    }, [])
+    //-----------------------Channel categories end-------------------------//
+
+    //-----------------------All channels start-------------------------//
+    const fetchAllChannels = useCallback(async () => {
+        try {
+            const response = await axios.post(
+                `${API_BASE_URL}/channels`,
+                {
+                    "language": selectedChannelCategory
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${API_AUTH_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
+                }
+            );
+
+            SetAllChannels(response.data.data);
+            if (response.data.data.length > 0) {
+                setCurrentVideo(response.data.data[0].stream_url);
+                setCurrentChannel(response.data.data[0].channel_name);
+            }
+
+        } catch (error) {
+            console.error('Error fetching channels:', error);
+        }
+    }, [selectedChannelCategory]);
+
+    useEffect(() => {
+        fetchAllChannels();
+    }, [fetchAllChannels, selectedChannelCategory]);
+    //-----------------------All channels end-------------------------//
+
+    // ------------------------ Deep links Start----------------------//
+    // const matchingChannel = quick_watch.find(
     //     (channel) => channel.channel_name === currentChannel
     //   );
 
@@ -84,136 +173,32 @@ export default function TVApp() {
     //         deeplinks(matchingChannel);
     //     }
     // }, [currentChannel, matchingChannel, deeplinks]);
+    // ----------------------- Deep links End-------------------------//
 
+    // --------------------- Account Details Start-------------------//
+    // const getAccount = useCallback(async () => {
+    //     try {
+    //         const response = await axios.post(
+    //             `${API_BASE_URL}/account-info`,
+    //             {},
+    //             {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${API_AUTH_TOKEN}`,
+    //                     'Content-Type': 'application/json',
+    //                     Accept: 'application/json',
+    //                 },
+    //             }
+    //         );
+    //         setAccountDetails(response.data.data);
+    //     } catch (error) {
+    //         console.error('Error fetching Account Details:', error);
+    //     }
+    // }, []);
 
-    // To Fetch the quick-channels
-    const fetchChannels = useCallback(async () => {
-        try {
-            const response = await axios.post(
-                `${API_BASE_URL}/quick-channels`,
-                {},
-                {
-                    headers: {
-                        'Authorization': `Bearer ${API_AUTH_TOKEN}`,
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json',
-                    },
-                }
-            );
-            setChannels2(response.data.data);
-            if (response.data.data.length > 0) {
-                setCurrentVideo(response.data.data[0].stream_url);
-                setCurrentChannel(response.data.data[0].channel_name);
-            }
-
-        } catch (error) {
-            console.error('Error fetching channels:', error);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchChannels();
-    }, [fetchChannels]);
-
-    // To Fetch the Account Details
-    const getAccount = useCallback(async () => {
-        try {
-            const response = await axios.post(
-                `${API_BASE_URL}/account-info`,
-                {},
-                {
-                    headers: {
-                        'Authorization': `Bearer ${API_AUTH_TOKEN}`,
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json',
-                    },
-                }
-            );
-            setAccountDetails(response.data.data);
-        } catch (error) {
-            console.error('Error fetching Account Details:', error);
-        }
-    }, []);
-
-    useEffect(() => {
-        getAccount();
-    }, [getAccount]);
-
-    //------------------------------------------------------//
-    //channel categories
-    const fetchcategories = useCallback(async () => {
-        try {
-            const response = await axios.post(
-                `${API_BASE_URL}/languages`,
-                {},
-                {
-                    headers: {
-                        'Authorization': `Bearer ${API_AUTH_TOKEN}`,
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json',
-                    },
-                }
-            );
-            setCategories(response.data.data);
-        } catch (error) {
-            console.error('Error fetching Categories:', error);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchcategories();
-    }, [fetchcategories]);
-
-
-    const handleCategoryChange = useCallback((category: string) => {
-        console.log(category,"category");
-        setSelectedCategory(category)
-
-    }, [])
-    //------------------------------------------------------//
-
-    //------------------------------------------------------//
-    // Allchannels
-    const fetchAllChannels = useCallback(async () => {
-        try {
-            const response = await axios.post(
-                `${API_BASE_URL}/channels`,
-                {
-                    "language" : "Punjabi"
-                },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${API_AUTH_TOKEN}`,
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json',
-                    },
-                }
-            );
-            
-            console.log(response.data,"SetAllChannelsSetAllChannelsSetAllChannelsSetAllChannelsSetAllChannels");
-            
-            SetAllChannels(response.data.data);
-            if (response.data.data.length > 0) {
-                setCurrentVideo(response.data.data[0].stream_url);
-                setCurrentChannel(response.data.data[0].channel_name);
-            }
-
-        } catch (error) {
-            console.error('Error fetching channels:', error);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchAllChannels();
-    }, [fetchAllChannels,selectedCategory]);
-    //------------------------------------------------------//
-
-
-    useEffect(() => {
-        if (!emblaApi) return
-        onSelect()
-        emblaApi.on('select', onSelect)
-    }, [emblaApi, onSelect])
+    // useEffect(() => {
+    //     getAccount();
+    // }, [getAccount]);
+    // --------------------- Account Details End--------------------//
 
     const playChannel = useCallback((channel: {
         channel(channel_name: any): unknown; videoUrl: SetStateAction<string>; name: SetStateAction<string>;
@@ -221,13 +206,6 @@ export default function TVApp() {
         setCurrentVideo(channel.stream_url);
         setCurrentChannel(channel.channel_name);
     }, [])
-
-    const filteredChannels = channels2.filter(channel =>
-        selectedCategory === 'all' || channel.add_language === selectedCategory
-    )
-
-    console.log(filteredChannels, "filteredChannelsfilteredChannelsfilteredChannels");
-
 
     return (
         <div className="min-h-screen text-foreground flex flex-col">
@@ -241,6 +219,23 @@ export default function TVApp() {
                     My Account
                 </Button>
             </header>
+
+
+            {/* Category buttons */}
+            <div className="p-4 flex flex-wrap gap-2 justify-center items-center">
+                {Categories.map((category) => (
+                    <Button
+                        key={category.id}
+                        variant={selectedChannelCategory === category ? "default" : "outline"}
+                        onClick={() => handleChannelCategoryChange(category.insert_language)}
+                        className={`btn ${selectedChannelCategory === category.insert_language ?
+                            "bg-[var(--primary-color)] text-white" :
+                            "text-[var(--primary-color)] hover:bg-[var(--secondary-color)] hover:text-white"}`}
+                    >
+                        {category.insert_language}
+                    </Button>
+                ))}
+            </div>
 
             {/* Main content area */}
             <div className="flex flex-col md:flex-row h-[calc(100vh-80px)]">
@@ -264,14 +259,13 @@ export default function TVApp() {
                         </MediaPlayer>
                     </div>
 
-
                     <h2 className="text-xl font-semibold mt-2 text-center underline text-[var(--heading-text-color)]">Quick Watch</h2>
 
                     {/* Horizontal channel slider */}
                     <div className="mt-4 relative">
                         <div className="overflow-hidden" ref={emblaRef}>
                             <div className="flex">
-                                {channels2.map((channel) => (
+                                {quick_watch.map((channel) => (
                                     <div key={channel.id} className="flex-[0_0_25%] min-w-0 px-2">
                                         <div className="p-2 text-center">
                                             <Image
@@ -301,21 +295,6 @@ export default function TVApp() {
                             </div>
                         </div>
 
-                        {/* Category buttons */}
-                        <div className="p-4 flex flex-wrap gap-2 justify-center items-center">
-                            {Categories.map((category) => (
-                                <Button
-                                    key={category.id}
-                                    variant={selectedCategory === category ? "default" : "outline"}
-                                    onClick={() => handleCategoryChange(category.insert_language)}
-                                    className={`btn ${selectedCategory === category.insert_language ?
-                                        "bg-[var(--primary-color)] text-white" :
-                                        "text-[var(--primary-color)] hover:bg-[var(--secondary-color)] hover:text-white"}`}
-                                >
-                                    {category.insert_language}
-                                </Button>
-                            ))}
-                        </div>
 
                         <Button
                             size="icon"
@@ -343,7 +322,7 @@ export default function TVApp() {
                 {/* Channel List (right side, 40%) */}
                 <div className="w-full md:w-2/5 p-4">
                     <h2 className="text-2xl font-bold mb-4 text-[var(--heading-text-color)]">
-                        {selectedCategory === 'all' ? 'All Channels' : `${selectedCategory} Channels`}
+                        {selectedChannelCategory === 'all' ? 'All Channels' : `${selectedChannelCategory} Channels`}
                     </h2>
                     <ScrollArea className="h-[calc(100vh-180px)]">
                         {AllChannels.map((channel) => (
