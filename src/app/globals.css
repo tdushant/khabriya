@@ -33,7 +33,7 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-    --e-global-color-primary: #31073f;
+    /* --e-global-color-primary: #31073f; */
     --e-global-color-secondary: #54595F;
     --e-global-color-accent: #BC18F3;
     --heading-text-color: #d50c71;
@@ -73,8 +73,8 @@ body {
 @layer base {
 
   body {
-    @apply bg-background text-foreground;
-    background-image: linear-gradient(39deg, #070124 0%, #4E073C 100%);
+    /* @apply bg-background text-foreground; */
+   
     font-size: 16px;
     font-weight: 400;
     line-height: 1.75;
@@ -109,4 +109,12 @@ body {
     z-index: 1;
     overflow: hidden;
   }
+}
+body{
+   background-image: linear-gradient(39deg, #070124 0%, #4E073C 100%);
+}
+.channels_image img{
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
 }
