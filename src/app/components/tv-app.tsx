@@ -13,6 +13,8 @@ import useEmblaCarousel from 'embla-carousel-react'
 import logoImg from "../../../public/logo.svg";
 import playstoreIcon from "../../image/playstore.svg"
 import axios from 'axios';
+import { Menu, X } from 'lucide-react';  // Assuming you're using Lucide icons for the hamburger menu
+
 
 
 export default function TVApp() {
@@ -34,12 +36,19 @@ export default function TVApp() {
     const [Categories, setCategories] = useState([])
     const [account, setAccountDetails] = useState([])
     const [AllChannels, SetAllChannels] = useState([])
-    console.log(currentVideo, "currentVideo", currentChannel, "currentChannel");
+    console.log(Categories, "Categories");
+    const [isMenuOpen, setIsMenuOpen] = useState(false); // State to toggle the menu
+
+    const toggleMenu = () => {
+        setIsMenuOpen(prev => !prev);
+    };
+
 
     // const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
     // const API_AUTH_TOKEN = process.env.NEXT_PUBLIC_API_AUTH_TOKEN;
     const API_BASE_URL = 'https://api-houston.khabriya.in/api/v3';
     const API_AUTH_TOKEN = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjFmZGQ3YjMzLWY2ZGItNDNlOC05NmM0LTFkNDMyYjc2NDI4NCIsIm1hY19hZGRyZXNzIjoibWFjX2FkZHJlc3MiLCJpYXQiOjE3MzE5NDE0NTF9.RrgsywJ4zNcTfER0Kd48bQZWCQoKO3GOmqYF0PBhPfyc1MOoXwTXVSQzYV1k-60Ch3sD8lWMXFOtC9rFIzOKSFD8hpzoQSzG07FpOLdtgYASuD49pBCk-1EsEOAArX3dWoumHe0C52Uw-NvABdDM1lLIMcQZxsh1DTA1SxMZUfGuPX5oMmdXdFKqyRX0LX8Xa_aDfvA7dhvyPsdqxyMXn_ieeJK9BzzW5NJYKW68gwpOAF6yjzJI-lDYQHKBeqsXSXEpL_vaESdLnZT-gBgvzuC6GgoMCwO8YVu99X7OWc-dDYvS35JJ9Oq0WePm-WBbRHe61iUD4UmsFZS4SCO_3A';
+
 
     useEffect(() => {
         if (!emblaApi) return
@@ -215,30 +224,81 @@ export default function TVApp() {
                 <div className="flex items-center">
                     <Image src={logoImg} alt="TV App Logo" width={100} height={40} />
                 </div>
-                <Button variant="outline" className="btn bg-[var(--primary-color)] text-white hover:bg-[var(--secondary-color)] hover:text-white">
+                <Button variant="outline" className="acc_btn btn bg-[var(--primary-color)] text-white hover:bg-[var(--secondary-color)] hover:text-white hidden md:flex">
                     <User className="mr-2 h-4 w-4" />
                     My Account
+                </Button>
+                <Button
+                    variant="outline"
+                    className="md:hidden bg-white text-black"
+                    onClick={toggleMenu}
+                >
+                    {isMenuOpen ? (
+                        <X className="h-6 w-6 text-black bg-white" /> // Visible cross icon
+                    ) : (
+                        <Menu className="h-6 w-6 text-black bg-white" /> // Visible menu icon
+                    )}
                 </Button>
             </header>
 
 
-            {/* Category buttons */}
-            <div className="p-4 flex flex-wrap gap-2 justify-center items-center">
-                {Categories && <h2 className="text-2xl font-bold  text-[var(--heading-text-color)]">
-                    Sort By :</h2>}
+            {/* Mobile Menu: Slide in from the right */}
+            <div
+                className={`${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                    } fixed top-0 right-0 h-full w-3/4 bg-[var(--primary-color)] bg-opacity-80 p-4 transition-transform duration-300 ease-in-out md:hidden z-50`}
+            >
+                <div className="flex justify-end ">
+                    <Button onClick={toggleMenu} variant="outline" className="text-white">
+                        <X className="h-6 w-6 text-black bg-white" />
+                    </Button>
+                </div>
+
+                {Categories.map((category) => (
+                    <span
+                        key={category.id}
+                        onClick={() => {
+                            handleChannelCategoryChange(category.insert_language);
+                            setIsMenuOpen(false);
+                        }}
+                        className={`block text-white text-lg mt-3 cursor-pointer px-4 py-2 rounded-md transition-colors duration-300 ${selectedChannelCategory === category.insert_language
+                            ? 'bg-[var(--primary-color)] text-white'
+                            : 'hover:bg-[var(--secondary-color)] text-[var(--primary-color)]'
+                            }`}
+                    >
+                        {category.insert_language}
+                    </span>
+                ))}
+                <div className="my-4">
+                    <Button
+                        variant="outline"
+                        className="acc_btn btn bg-white text-black hover:bg-[var(--secondary-color)] hover:text-white w-full"
+                    >
+                        <User className="mr-2 h-4 w-4" />
+                        My Account
+                    </Button>
+                </div>
+            </div>
+
+            {/* Desktop Category buttons (always visible on desktop) */}
+            <div className="p-4 flex flex-wrap gap-2 justify-center items-center hidden md:flex">
+                {/* {Categories && (
+                    <h2 className="text-2xl font-bold text-[var(--heading-text-color)]">Sort By</h2>
+                )} */}
                 {Categories.map((category) => (
                     <Button
                         key={category.id}
-                        variant={selectedChannelCategory === category ? "default" : "outline"}
+                        variant={selectedChannelCategory === category ? 'default' : 'outline'}
                         onClick={() => handleChannelCategoryChange(category.insert_language)}
-                        className={`btn ${selectedChannelCategory === category.insert_language ?
-                            "bg-[var(--primary-color)] text-white" :
-                            "text-[var(--primary-color)] hover:bg-[var(--secondary-color)] hover:text-white"}`}
+                        className={`btn ${selectedChannelCategory === category.insert_language
+                            ? 'bg-[var(--primary-color)] text-white'
+                            : 'text-text-white bg-transparent'
+                            }`}
                     >
                         {category.insert_language}
                     </Button>
                 ))}
             </div>
+
 
             {/* Main content area */}
             <div className="flex flex-col md:flex-row ">
@@ -260,7 +320,7 @@ export default function TVApp() {
                         </MediaPlayer>
                     </div>
 
-                    <h2 className="text-xl font-semibold mt-2 text-center text-[var(--heading-text-color)]">Quick Watch</h2>
+                    <h2 className="text-2xl font-bold mb-4  mt-4 text-[var(--heading-text-color)]">Quick Watch</h2>
 
                     {/* Horizontal channel slider */}
                     <div className="mt-4 relative ">
@@ -285,7 +345,7 @@ export default function TVApp() {
                                             <Button
                                                 size="sm"
                                                 onClick={() => playChannel(channel)}
-                                                className="btn mt-2 bg-[var(--primary-color)] text-white hover:bg-[var(--secondary-color)]"
+                                                className=" acc_btn btn mt-2 bg-[var(--primary-color)] text-white hover:bg-[var(--secondary-color)]"
                                             >
                                                 <PlayCircle className="h-4 w-4 mr-1" />
                                                 Play
@@ -300,7 +360,7 @@ export default function TVApp() {
                         <Button
                             size="icon"
                             variant="outline"
-                            className="btn absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-[var(--primary-color)] text-white "
+                            className="btn absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-transparent	 text-white hover:bg-transparent hover:text-white"
                             onClick={scrollPrev}
                             disabled={!canScrollPrev}
                         >
@@ -310,7 +370,7 @@ export default function TVApp() {
                         <Button
                             size="icon"
                             variant="outline"
-                            className="btn absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-[var(--primary-color)] text-white hover:bg-[var(--secondary-color)]"
+                            className="btn absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-transparent	 text-white hover:bg-transparent hover:text-white"
                             onClick={scrollNext}
                             disabled={!canScrollNext}
                         >
