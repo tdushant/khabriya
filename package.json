@@ -12,12 +12,15 @@
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-scroll-area": "^1.2.0",
     "@radix-ui/react-slot": "^1.1.0",
+    "@types/video.js": "^7.3.58",
+    "@videojs/http-streaming": "^3.16.1",
     "@vidstack/react": "^1.12.12",
     "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
     "embla-carousel-react": "^8.3.0",
+    "hls.js": "^1.5.17",
     "lucide-react": "^0.453.0",
     "next": "15.0.1",
     "plyr": "^3.7.8",
@@ -25,7 +28,10 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.5.4",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "video.js": "^8.20.0",
+    "videojs-contrib-ads": "^7.5.2",
+    "videojs-ima": "github:googleads/videojs-ima"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -35,6 +41,7 @@
     "eslint-config-next": "15.0.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vlitejs": "^7.0.0"
   }
 }
