@@ -14,6 +14,8 @@ import logoImg from "../../../public/logo.svg";
 import playstoreIcon from "../../image/playstore.svg"
 import axios from 'axios';
 import { Menu, X } from 'lucide-react';  // Assuming you're using Lucide icons for the hamburger menu
+import VideoPlayer from './VideoPlayer';
+import AdMediaPlayer from './VideoPlayer';
 
 
 
@@ -36,7 +38,7 @@ export default function TVApp() {
     const [Categories, setCategories] = useState([])
     const [account, setAccountDetails] = useState([])
     const [AllChannels, SetAllChannels] = useState([])
-    console.log(Categories, "Categories");
+
     const [isMenuOpen, setIsMenuOpen] = useState(false); // State to toggle the menu
 
     const toggleMenu = () => {
@@ -304,7 +306,14 @@ export default function TVApp() {
             <div className="flex flex-col md:flex-row ">
                 <div className="w-full md:w-4/6 p-4 ">
                     <div className="flex-grow">
-                        <MediaPlayer
+                        <AdMediaPlayer
+                            currentVideo="https://your-live-stream-url/live.m3u8"
+                            adTagUrl="https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_preroll_skippable&sz=640x480&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator="
+                            poster="https://example.com/live-stream-poster.jpg"
+                            title="My Live Stream"
+                        />
+                        {/* <VideoPlayer currentVideo={currentVideo} adTagUrl="https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_preroll_skippable&sz=640x480&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=" /> */}
+                        {/* <MediaPlayer
                             title={currentChannel}
                             src={currentVideo}
                             poster="https://image.mux.com/v69RSHhFelSm4701snP22dYz2jICy4E4FUyk02rW4gxRM/thumbnail.webp?time=30"
@@ -317,7 +326,7 @@ export default function TVApp() {
                         >
                             <MediaProvider />
                             <DefaultVideoLayout thumbnails="https://image.mux.com/v69RSHhFelSm4701snP22dYz2jICy4E4FUyk02rW4gxRM/thumbnail.webp" icons={defaultLayoutIcons} />
-                        </MediaPlayer>
+                        </MediaPlayer> */}
                     </div>
 
                     <h2 className="text-2xl font-bold mb-4  mt-4 text-[var(--heading-text-color)]">Quick Watch</h2>
