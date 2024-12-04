@@ -13,7 +13,7 @@
     "@radix-ui/react-scroll-area": "^1.2.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@types/video.js": "^7.3.58",
-    "@videojs/http-streaming": "^3.16.1",
+    "@videojs/http-streaming": "^3.16.2",
     "@vidstack/react": "^1.12.12",
     "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",

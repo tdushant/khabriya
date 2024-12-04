@@ -16,10 +16,13 @@ import axios from 'axios';
 import { Menu, X } from 'lucide-react';  // Assuming you're using Lucide icons for the hamburger menu
 import VideoPlayer from './VideoPlayer';
 import AdMediaPlayer from './VideoPlayer';
-
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 
 export default function TVApp() {
+    const router = useRouter();
+    const homeUrl = '/';
     const [canScrollPrev, setCanScrollPrev] = useState(false)
     const [canScrollNext, setCanScrollNext] = useState(true)
     const [emblaRef, emblaApi] = useEmblaCarousel({ slidesToScroll: 4, align: 'start' })
@@ -73,11 +76,6 @@ export default function TVApp() {
                 }
             );
             setquick_watch(response.data.data);
-            // if (response.data.data.length > 0) {
-            //     setCurrentVideo(response.data.data[0].stream_url);
-            //     setCurrentChannel(response.data.data[0].channel_name);
-            // }
-
         } catch (error) {
             console.error('Error fetching channels:', error);
         }
@@ -215,16 +213,21 @@ export default function TVApp() {
 
     const playChannel = useCallback((channel: {
         channel(channel_name: any): unknown; videoUrl: SetStateAction<string>; name: SetStateAction<string>;
+
     }) => {
         setCurrentVideo(channel.stream_url);
         setCurrentChannel(channel.channel_name);
-    }, [])
+        const slug = channel.channel_name.replace(/\s+/g, '-').toLowerCase();
+        window.history.replaceState(null, '', `/${encodeURIComponent(slug)}`);
+    }, []);
 
     return (
         <div className=" md:mx-6 mx-2 ">
             <header className="flex justify-between items-center p-4 text-white header">
                 <div className="flex items-center">
-                    <Image src={logoImg} alt="TV App Logo" width={100} height={40} />
+                    <Link href={homeUrl} passHref>
+                        <Image src={logoImg} alt="TV App Logo" width={100} height={40} />
+                    </Link>
                 </div>
                 <Button variant="outline" className="acc_btn btn bg-[var(--primary-color)] text-white hover:bg-[var(--secondary-color)] hover:text-white hidden md:flex">
                     <User className="mr-2 h-4 w-4" />
@@ -270,6 +273,7 @@ export default function TVApp() {
                         {category.insert_language}
                     </span>
                 ))}
+                
                 <div className="my-4">
                     <Button
                         variant="outline"
@@ -307,7 +311,7 @@ export default function TVApp() {
                 <div className="w-full md:w-4/6 p-4 ">
                     <div className="flex-grow">
                         <AdMediaPlayer
-                            currentVideo="https://your-live-stream-url/live.m3u8"
+                            currentVideo={currentVideo}
                             adTagUrl="https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_preroll_skippable&sz=640x480&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator="
                             poster="https://example.com/live-stream-poster.jpg"
                             title="My Live Stream"
@@ -365,7 +369,6 @@ export default function TVApp() {
                             </div>
                         </div>
 
-
                         <Button
                             size="icon"
                             variant="outline"
@@ -396,36 +399,56 @@ export default function TVApp() {
                     </h2>
                     <ScrollArea className="h-[calc(100vh-180px)]">
                         {AllChannels.map((channel) => (
-                            <div key={channel.id} className="flex items-center mb-4 p-2 hover:bg-[var(--secondary-color)] hover:text-white rounded-lg cursor-pointer channels_image">
-                                <Image src={channel.image} alt={channel.channel_name} width={50} height={50} className=" mr-4" />
+                            <div
+                                key={channel.id}
+                                className={`relative flex items-center mb-4 p-2 rounded-lg cursor-pointer channels_image 
+                                ${currentChannel === channel.channel_name ? 'bg-[var(--secondary-color)] text-white' : 'hover:bg-[var(--secondary-color)] hover:text-white group'}`}
+                            >
+                                {/* Channel Thumbnail */}
+                                <Image
+                                    src={channel.image}
+                                    alt={channel.channel_name}
+                                    width={50}
+                                    height={50}
+                                    className="mr-4"
+                                />
+
+                                {/* Channel Details */}
                                 <div className="flex-grow">
                                     <h3 className="font-semibold text-white">{channel.channel_name}</h3>
                                     <p className="text-sm text-[var(--paragraph-text-color)]">{channel.add_language}</p>
                                 </div>
-                                {currentChannel === channel.channel_name ? (
-                                    <Button
-                                        size="sm"
-                                        disabled
-                                        className="btn bg-[var(--primary-color)] text-white"
-                                    >
-                                        <PlayCircle className="h-5 w-5 mr-1" />
-                                        Now Playing
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        size="sm"
-                                        onClick={() => playChannel(channel)}
-                                        className="btn bg-[var(--primary-color)] text-white hover:bg-[var(--secondary-color)]"
-                                    >
-                                        <PlayCircle className="h-5 w-5 mr-1" />
-                                        Play
-                                    </Button>
-                                )}
+
+                                {/* Play Button */}
+                                <div
+                                    className={`absolute right-4 top-1/2 transform -translate-y-1/2 transition-opacity duration-300 
+                                    ${currentChannel === channel.channel_name ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                                >
+                                    {currentChannel === channel.channel_name ? (
+                                        <Button
+                                            size="sm"
+                                            disabled
+                                            className="btn bg-[var(--primary-color)] text-white"
+                                        >
+                                            <PlayCircle className="h-5 w-5 mr-1" />
+                                            Now Playing
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            size="sm"
+                                            onClick={() => playChannel(channel)}
+                                            className="btn bg-[var(--primary-color)] text-white hover:bg-[var(--secondary-color)]"
+                                        >
+                                            <PlayCircle className="h-5 w-5 mr-1" />
+                                            Play
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </ScrollArea>
                 </div>
             </div>
         </div>
-    )
+    );
 }

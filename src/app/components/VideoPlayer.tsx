@@ -5,6 +5,8 @@ import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import "videojs-contrib-ads/dist/videojs.ads.css";
 import "videojs-ima/dist/videojs.ima.css";
+import 'videojs-contrib-ads';
+import 'videojs-ima';
 
 if (typeof window !== "undefined") {
   require("videojs-contrib-ads");
@@ -18,7 +20,7 @@ interface VideoPlayerProps {
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ currentVideo, adTagUrl }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-
+  console.log("Say hello url>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",currentVideo)
   useEffect(() => {
     let player: videojs.Player | null = null;
 
@@ -37,8 +39,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ currentVideo, adTagUrl }) => 
               },
               sources: [
                 {
-                    src: 'https://hls.tvpunjab.com/stream/deb10bae362f810630ec3abedcae5894.sdp/playlist.m3u8', // Your .m3u8 URL
-                    type: "application/x-mpegURL", // HLS MIME type
+                    src: {currentVideo},
+                    type: "application/x-mpegURL",
+                    withCredentials: true
                 },
               ],
           }
