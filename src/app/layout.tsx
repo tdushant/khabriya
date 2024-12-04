@@ -19,6 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <Head>
         <link rel="canonical" href="https://livetv.neotvapp.com/" />
+        <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet"/>
         <meta property="og:locale" content="en_US" />
         <meta property="og:type" content="website" />
         <meta
