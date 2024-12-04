@@ -14,7 +14,7 @@ import logoImg from "../../../public/logo.svg";
 import playstoreIcon from "../../image/playstore.svg"
 import axios from 'axios';
 import { Menu, X } from 'lucide-react';  // Assuming you're using Lucide icons for the hamburger menu
-import VideoPlayer from './VideoPlayer';
+import LiveVideoPlayer from './VideoPlayer';
 import AdMediaPlayer from './VideoPlayer';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -310,27 +310,7 @@ export default function TVApp() {
             <div className="flex flex-col md:flex-row ">
                 <div className="w-full md:w-4/6 p-4 ">
                     <div className="flex-grow">
-                        <AdMediaPlayer
-                            currentVideo={currentVideo}
-                            adTagUrl="https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_preroll_skippable&sz=640x480&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator="
-                            poster="https://example.com/live-stream-poster.jpg"
-                            title="My Live Stream"
-                        />
-                        {/* <VideoPlayer currentVideo={currentVideo} adTagUrl="https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_preroll_skippable&sz=640x480&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=" /> */}
-                        {/* <MediaPlayer
-                            title={currentChannel}
-                            src={currentVideo}
-                            poster="https://image.mux.com/v69RSHhFelSm4701snP22dYz2jICy4E4FUyk02rW4gxRM/thumbnail.webp?time=30"
-                            streamType="live"
-                            viewType="video"
-                            crossOrigin="anonymous"
-                            playsInline
-                            logLevel="warn"
-                            autoplay
-                        >
-                            <MediaProvider />
-                            <DefaultVideoLayout thumbnails="https://image.mux.com/v69RSHhFelSm4701snP22dYz2jICy4E4FUyk02rW4gxRM/thumbnail.webp" icons={defaultLayoutIcons} />
-                        </MediaPlayer> */}
+                        <LiveVideoPlayer/>
                     </div>
 
                     <h2 className="text-2xl font-bold mb-4  mt-4 text-[var(--heading-text-color)]">Quick Watch</h2>

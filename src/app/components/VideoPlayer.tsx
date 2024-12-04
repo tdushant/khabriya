@@ -1,101 +1,102 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import Script from "next/script"; // For loading external scripts dynamically
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
-import "videojs-contrib-ads/dist/videojs.ads.css";
+import "videojs-contrib-ads";
+import "videojs-ima";
 import "videojs-ima/dist/videojs.ima.css";
-import 'videojs-contrib-ads';
-import 'videojs-ima';
 
-if (typeof window !== "undefined") {
-  require("videojs-contrib-ads");
-  require("videojs-ima");
-}
+const LiveVideoPlayer = () => {
+  const videoRef = useRef(null);
 
-interface VideoPlayerProps {
-  currentVideo: string;
-  adTagUrl: string;
-}
-
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ currentVideo, adTagUrl }) => {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  console.log("Say hello url>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",currentVideo)
   useEffect(() => {
-    let player: videojs.Player | null = null;
+    let player;
 
     const initializePlayer = () => {
-      if (videoRef.current) {
-          player = videojs(videoRef.current, {
-          controls: true,
-          autoplay: true,
-          preload: "auto",
-          fluid: true, // Makes the player responsive
-          liveui: true, // Enables live stream UI
-          techOrder: ["html5"], // Ensure only HTML5 tech is used
-          html5: {
-              vhs: {
-                  withCredentials: true // Set true if authentication is required
-              },
-              sources: [
-                {
-                    src: {currentVideo},
-                    type: "application/x-mpegURL",
-                    withCredentials: true
-                },
-              ],
-          }
-        });
-
-        const options = {
-          id: "content_video",
-          adTagUrl,
-          adsRenderingSettings: {
-            enablePreloading: true,
+      // Initialize the Video.js player
+      player = videojs(videoRef.current, {
+        autoplay: false, // Autoplay will be managed by the ad
+        controls: true,
+        fluid: true, // Makes the player responsive
+        preload: "auto",
+        sources: [
+          {
+            src: "https://hls.tvpunjab.com/stream/deb10bae362f810630ec3abedcae5894.sdp/playlist.m3u8", // Main live stream
+            type: "application/x-mpegURL",
           },
-        };
+        ],
+      });
 
-        // Initialize IMA plugin
-        player.ima(options);
+      // Integrate Google IMA Ads
+      player.ima({
+        adTagUrl:
+          "http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpostpod%26deployment%3Dgmf-js&cmsid=496&vid=short_onecue&correlator=&skipoffset=5", // Skip ad after 5 seconds
+        debug: false, // Debugging disabled
+      });
 
-        // Handle Ad playback
-        const startEvent = /iPhone|iPad|Android/i.test(navigator.userAgent)
-          ? "touchend"
-          : "click";
+      // Event: Ad finished
+      player.on("ads-ad-ended", () => {
+        console.log("Ad finished. Now playing main content.");
+        player.play();
+      });
 
-        player.one(startEvent, () => {
-          player.ima.initializeAdDisplayContainer();
-        });
-      }
+      // Event: Ad error
+      player.on("adserror", (error) => {
+        console.error("Ad error:", error);
+        player.play(); // Play main content if ad fails
+      });
+
+      // Midroll control: Only allow one midroll ad every X seconds
+      let lastAdPlayed = 0;
+      player.on("contentplayback", () => {
+        const currentTime = player.currentTime();
+        if (currentTime - lastAdPlayed < 60) {
+          console.log("Skipping midroll ad, too soon since the last ad.");
+          player.trigger("adskip");
+        } else {
+          lastAdPlayed = currentTime;
+        }
+      });
     };
 
-    // Load IMA SDK
-    const script = document.createElement("script");
-    script.src = "https://imasdk.googleapis.com/js/sdkloader/ima3.js";
-    script.async = true;
-    script.onload = initializePlayer;
-    document.body.appendChild(script);
+    // Ensure the IMA SDK is fully loaded before initializing the player
+    if (typeof window.google !== "undefined") {
+      initializePlayer();
+    }
 
+    // Cleanup on unmount
     return () => {
       if (player) {
         player.dispose();
       }
-      document.body.removeChild(script);
     };
-  }, [adTagUrl]);
+  }, []);
 
   return (
     <div>
+      {/* Load Google IMA SDK as a priority */}
+      <Script
+        src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"
+        strategy="beforeInteractive" // Ensure it's loaded before player initialization
+        onLoad={() => {
+          console.log("Google IMA SDK loaded successfully.");
+        }}
+        onError={(e) => {
+          console.error("Failed to load Google IMA SDK:", e);
+        }}
+      />
+
+      {/* Video.js player */}
       <video
         ref={videoRef}
-        id="content_video"
-        className="video-js vjs-default-skin"
-        data-setup="{}"
-      >
-        <source src={currentVideo} type="application/x-mpegURL" />
-      </video>
+        className="video-js vjs-fluid vjs-default-skin"
+        controls
+        preload="auto"
+      />
     </div>
   );
 };
 
-export default VideoPlayer;
+export default LiveVideoPlayer;
