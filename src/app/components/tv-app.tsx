@@ -329,7 +329,7 @@ export default function TVApp() {
                         <div className="overflow-hidden" ref={emblaRef}>
                             <div className="flex">
                                 {quick_watch.map((channel) => (
-                                    <div key={channel.id} className="flex-[0_0_18%] min-w-0 px-2">
+                                    <div key={channel.id} className="lg:flex-[0_0_18%] flex-[0_0_25%] min-w-0 px-2">
                                         <div className="p-2 text-center channels_image">
                                             <Image
                                                 src={channel.image}
