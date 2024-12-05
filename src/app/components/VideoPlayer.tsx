@@ -8,8 +8,6 @@ import "videojs-contrib-ads";
 import "videojs-ima";
 import "videojs-ima/dist/videojs.ima.css";
 // import "videojs-http-streaming";
-import '@videojs/http-streaming'; // Correct import for HLS.js
-
 
 const LiveVideoPlayer = ({currentVideo}) => {
   console.log(">>>>>>>>>>>>>>currentVideo>>>>>>>>>>>>>>>",currentVideo)
@@ -17,8 +15,6 @@ const LiveVideoPlayer = ({currentVideo}) => {
   const videoRef = useRef(null);
 
   useEffect(() => {
-  console.log(">>>>>>>>>>>>>>currentVideo use>>>>>>>>>>>>>>>",currentVideo)
-
     let player;
 
     const initializePlayer = () => {
@@ -30,7 +26,7 @@ const LiveVideoPlayer = ({currentVideo}) => {
         preload: "auto",
         sources: [
           {
-            src: currentVideo, // Main live stream
+            src: 'https://stream.e2is.in/hls/7xMusic.m3u8', // Main live stream
             type: "application/x-mpegURL",
             withCredentials: true
           },
