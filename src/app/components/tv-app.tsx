@@ -1,30 +1,23 @@
 'use client'
 
 import { useState, useCallback, useEffect, SetStateAction } from 'react'
-import { MediaPlayer, MediaProvider } from '@vidstack/react'
-import '@vidstack/react/player/styles/default/theme.css';
-import '@vidstack/react/player/styles/default/layouts/video.css';
-import { defaultLayoutIcons, DefaultVideoLayout } from '@vidstack/react/player/layouts/default';
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
 import { PlayCircle, ChevronLeft, ChevronRight, User } from 'lucide-react'
 import Image from 'next/image'
 import useEmblaCarousel from 'embla-carousel-react'
 import logoImg from "../../../public/logo.svg";
-import playstoreIcon from "../../image/playstore.svg"
 import axios from 'axios';
-import { Menu, X } from 'lucide-react';  // Assuming you're using Lucide icons for the hamburger menu
+import { Menu, X } from 'lucide-react'; 
 import LiveVideoPlayer from './VideoPlayer';
-import AdMediaPlayer from './VideoPlayer';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 
 export default function TVApp() {
-    const router = useRouter();
     const homeUrl = '/';
     const [canScrollPrev, setCanScrollPrev] = useState(false)
     const [canScrollNext, setCanScrollNext] = useState(true)
+    const [ channelChanged , setChannelChanged ] = useState(false);
     const [emblaRef, emblaApi] = useEmblaCarousel({ slidesToScroll: 4, align: 'start' })
     const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
     const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
@@ -34,14 +27,13 @@ export default function TVApp() {
         setCanScrollNext(emblaApi.canScrollNext())
     }, [emblaApi])
 
-    const [currentVideo, setCurrentVideo] = useState('')
+    const [currentVideo, setCurrentVideo] = useState("")
     const [currentChannel, setCurrentChannel] = useState('')
-    const [selectedChannelCategory, setSelectedChannelCategory] = useState('Hindi')
+    const [selectedChannelCategory, setSelectedChannelCategory] = useState('Punjabi')
     const [quick_watch, setquick_watch] = useState([])
     const [Categories, setCategories] = useState([])
-    const [account, setAccountDetails] = useState([])
     const [AllChannels, SetAllChannels] = useState([])
-
+  
     const [isMenuOpen, setIsMenuOpen] = useState(false); // State to toggle the menu
 
     const toggleMenu = () => {
@@ -54,6 +46,7 @@ export default function TVApp() {
     const API_BASE_URL = 'https://api-houston.khabriya.in/api/v3';
     const API_AUTH_TOKEN = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjFmZGQ3YjMzLWY2ZGItNDNlOC05NmM0LTFkNDMyYjc2NDI4NCIsIm1hY19hZGRyZXNzIjoibWFjX2FkZHJlc3MiLCJpYXQiOjE3MzE5NDE0NTF9.RrgsywJ4zNcTfER0Kd48bQZWCQoKO3GOmqYF0PBhPfyc1MOoXwTXVSQzYV1k-60Ch3sD8lWMXFOtC9rFIzOKSFD8hpzoQSzG07FpOLdtgYASuD49pBCk-1EsEOAArX3dWoumHe0C52Uw-NvABdDM1lLIMcQZxsh1DTA1SxMZUfGuPX5oMmdXdFKqyRX0LX8Xa_aDfvA7dhvyPsdqxyMXn_ieeJK9BzzW5NJYKW68gwpOAF6yjzJI-lDYQHKBeqsXSXEpL_vaESdLnZT-gBgvzuC6GgoMCwO8YVu99X7OWc-dDYvS35JJ9Oq0WePm-WBbRHe61iUD4UmsFZS4SCO_3A';
 
+    const [CountOnly , SetCountOnly] = useState(0);
 
     useEffect(() => {
         if (!emblaApi) return
@@ -117,6 +110,7 @@ export default function TVApp() {
 
     //-----------------------All channels start-------------------------//
     const fetchAllChannels = useCallback(async () => {
+        console.log("Running Count of All channels is >>>>>>>>>>>>>>>>")
         try {
             const response = await axios.post(
                 `${API_BASE_URL}/channels`,
@@ -134,18 +128,19 @@ export default function TVApp() {
 
             SetAllChannels(response.data.data);
             if (response.data.data.length > 0) {
-                setCurrentVideo(response.data.data[0].stream_url);
                 setCurrentChannel(response.data.data[0].channel_name);
+                setCurrentVideo(response.data.data[0].stream_url);
             }
 
         } catch (error) {
             console.error('Error fetching channels:', error);
         }
-    }, [selectedChannelCategory,currentVideo]);
+    }, []);
 
     useEffect(() => {
         fetchAllChannels();
-    }, [fetchAllChannels, selectedChannelCategory]);
+    }, [selectedChannelCategory]);
+
     //-----------------------All channels end-------------------------//
 
     // ------------------------ Deep links Start----------------------//
@@ -184,17 +179,32 @@ export default function TVApp() {
     //         deeplinks(matchingChannel);
     //     }
     // }, [currentChannel, matchingChannel, deeplinks]);
-    // ----------------------- Deep links End-------------------------//
+    // -----------------------Deep links End-------------------------//
+   
+    // const playChannel = (channel) =>{
+    //     setCurrentVideo(channel?.stream_url);
+    //     setCurrentChannel(channel?.channel_name);
+    // }
+    // useEffect(()=>{
+    //     playChannel()
+    // },[currentVideo,currentChannel])
 
     const playChannel = useCallback((channel: {
         channel(channel_name: any): unknown; videoUrl: SetStateAction<string>; name: SetStateAction<string>;
 
     }) => {
+        setChannelChanged(true);
         setCurrentVideo(channel.stream_url);
+        console.log("strem is >>>>>>>>>>>>>>>>>>>",channel.stream_url)
         setCurrentChannel(channel.channel_name);
+        console.log("Channel is >>>>>>>>>>>>>>>>>>>",channel.channel_name)
         const slug = channel.channel_name.replace(/\s+/g, '-').toLowerCase();
         window.history.replaceState(null, '', `/${encodeURIComponent(slug)}`);
-    }, []);
+    }, [currentVideo,currentChannel]);
+
+    // if(!currentVideo){
+    //     return "sdfsdf";
+    // }
 
     return (
         <div className=" md:mx-6 mx-2 ">
@@ -287,6 +297,7 @@ export default function TVApp() {
                     <div className="flex-grow">
                         <LiveVideoPlayer
                             currentVideo={currentVideo}
+                            channelChanged={channelChanged}
                         />
                     </div>
 
