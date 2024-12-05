@@ -7,28 +7,32 @@ import "video.js/dist/video-js.css";
 import "videojs-contrib-ads";
 import "videojs-ima";
 import "videojs-ima/dist/videojs.ima.css";
-// import "videojs-http-streaming";
 
-const LiveVideoPlayer = ({currentVideo}) => {
-  console.log(">>>>>>>>>>>>>>currentVideo>>>>>>>>>>>>>>>",currentVideo)
-
+const LiveVideoPlayer = (currentVideo) => {
   const videoRef = useRef(null);
 
   useEffect(() => {
+    if (!currentVideo?.currentVideo) {
+      // Avoid executing the effect if `currentVideo` is not valid
+      return;
+    }
+    console.log("🚀 ~ LiveVideoPlayer ~ currentVideo:", currentVideo?.currentVideo)
+
+
     let player;
 
+    
     const initializePlayer = () => {
       // Initialize the Video.js player
       player = videojs(videoRef.current, {
-        autoplay: true, // Autoplay will be managed by the ad
+        autoplay: false, // Autoplay will be managed by the ad
         controls: true,
         fluid: true, // Makes the player responsive
         preload: "auto",
         sources: [
           {
-            src: currentVideo, // Main live stream
+            src: currentVideo?.currentVideo, // Main live stream
             type: "application/x-mpegURL",
-            // withCredentials: true
           },
         ],
       });
@@ -76,7 +80,7 @@ const LiveVideoPlayer = ({currentVideo}) => {
         player.dispose();
       }
     };
-  }, [currentVideo]);
+  }, [currentVideo?.currentVideo]);
 
   return (
     <div>
