@@ -26,7 +26,7 @@ const LiveVideoPlayer = ({currentVideo}) => {
         preload: "auto",
         sources: [
           {
-            src: 'https://stream.e2is.in/hls/7xMusic.m3u8', // Main live stream
+            src: currentVideo, // Main live stream
             type: "application/x-mpegURL",
             // withCredentials: true
           },
@@ -76,7 +76,7 @@ const LiveVideoPlayer = ({currentVideo}) => {
         player.dispose();
       }
     };
-  }, []);
+  }, [currentVideo]);
 
   return (
     <div>
