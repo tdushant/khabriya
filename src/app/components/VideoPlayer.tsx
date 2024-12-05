@@ -7,24 +7,32 @@ import "video.js/dist/video-js.css";
 import "videojs-contrib-ads";
 import "videojs-ima";
 import "videojs-ima/dist/videojs.ima.css";
+// import "videojs-http-streaming";
+import '@videojs/http-streaming'; // Correct import for HLS.js
 
-const LiveVideoPlayer = () => {
+
+const LiveVideoPlayer = ({currentVideo}) => {
+  console.log(">>>>>>>>>>>>>>currentVideo>>>>>>>>>>>>>>>",currentVideo)
+
   const videoRef = useRef(null);
 
   useEffect(() => {
+  console.log(">>>>>>>>>>>>>>currentVideo use>>>>>>>>>>>>>>>",currentVideo)
+
     let player;
 
     const initializePlayer = () => {
       // Initialize the Video.js player
       player = videojs(videoRef.current, {
-        autoplay: false, // Autoplay will be managed by the ad
+        autoplay: true, // Autoplay will be managed by the ad
         controls: true,
         fluid: true, // Makes the player responsive
         preload: "auto",
         sources: [
           {
-            src: "https://hls.tvpunjab.com/stream/deb10bae362f810630ec3abedcae5894.sdp/playlist.m3u8", // Main live stream
+            src: currentVideo, // Main live stream
             type: "application/x-mpegURL",
+            withCredentials: true
           },
         ],
       });
@@ -33,7 +41,7 @@ const LiveVideoPlayer = () => {
       player.ima({
         adTagUrl:
           "http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpostpod%26deployment%3Dgmf-js&cmsid=496&vid=short_onecue&correlator=&skipoffset=5", // Skip ad after 5 seconds
-        debug: false, // Debugging disabled
+        debug: true, // Debugging disabled
       });
 
       // Event: Ad finished

@@ -141,7 +141,7 @@ export default function TVApp() {
         } catch (error) {
             console.error('Error fetching channels:', error);
         }
-    }, [selectedChannelCategory]);
+    }, [selectedChannelCategory,currentVideo]);
 
     useEffect(() => {
         fetchAllChannels();
@@ -186,31 +186,6 @@ export default function TVApp() {
     // }, [currentChannel, matchingChannel, deeplinks]);
     // ----------------------- Deep links End-------------------------//
 
-    // --------------------- Account Details Start-------------------//
-    // const getAccount = useCallback(async () => {
-    //     try {
-    //         const response = await axios.post(
-    //             `${API_BASE_URL}/account-info`,
-    //             {},
-    //             {
-    //                 headers: {
-    //                     'Authorization': `Bearer ${API_AUTH_TOKEN}`,
-    //                     'Content-Type': 'application/json',
-    //                     Accept: 'application/json',
-    //                 },
-    //             }
-    //         );
-    //         setAccountDetails(response.data.data);
-    //     } catch (error) {
-    //         console.error('Error fetching Account Details:', error);
-    //     }
-    // }, []);
-
-    // useEffect(() => {
-    //     getAccount();
-    // }, [getAccount]);
-    // --------------------- Account Details End--------------------//
-
     const playChannel = useCallback((channel: {
         channel(channel_name: any): unknown; videoUrl: SetStateAction<string>; name: SetStateAction<string>;
 
@@ -244,7 +219,7 @@ export default function TVApp() {
                         <Menu className="h-6 w-6 text-black bg-white" /> // Visible menu icon
                     )}
                 </Button>
-            </header>
+            </header> 
 
 
             {/* Mobile Menu: Slide in from the right */}
@@ -310,7 +285,9 @@ export default function TVApp() {
             <div className="flex flex-col md:flex-row ">
                 <div className="w-full md:w-4/6 p-4 ">
                     <div className="flex-grow">
-                        <LiveVideoPlayer/>
+                        <LiveVideoPlayer
+                            currentVideo={currentVideo}
+                        />
                     </div>
 
                     <h2 className="text-2xl font-bold mb-4  mt-4 text-[var(--heading-text-color)]">Quick Watch</h2>
