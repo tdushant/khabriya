@@ -195,9 +195,7 @@ export default function TVApp() {
     }) => {
         setChannelChanged(true);
         setCurrentVideo(channel.stream_url);
-        console.log("strem is >>>>>>>>>>>>>>>>>>>",channel.stream_url)
         setCurrentChannel(channel.channel_name);
-        console.log("Channel is >>>>>>>>>>>>>>>>>>>",channel.channel_name)
         const slug = channel.channel_name.replace(/\s+/g, '-').toLowerCase();
         window.history.replaceState(null, '', `/${encodeURIComponent(slug)}`);
     }, [currentVideo,currentChannel]);
@@ -297,7 +295,6 @@ export default function TVApp() {
                     <div className="flex-grow">
                         <LiveVideoPlayer
                             currentVideo={currentVideo}
-                            channelChanged={channelChanged}
                         />
                     </div>
 

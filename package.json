@@ -29,9 +29,9 @@
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
-    "video.js": "^8.20.0",
-    "videojs-contrib-ads": "^7.5.2",
-    "videojs-ima": "github:googleads/videojs-ima"
+    "video.js": "^7.21.6",
+    "videojs-contrib-ads": "^6.9.0",
+    "videojs-ima": "^1.11.0"
   },
   "devDependencies": {
     "@types/node": "^20",
