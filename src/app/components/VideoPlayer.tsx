@@ -22,7 +22,6 @@ export default function LiveVideoPlayer({ currentVideo }: VideoPlayerProps) {
       return;
     }
 
-    // Initialize the player once when it has not been initialized yet
     if (!isPlayerInitialized) {
       console.log("🚀 ~ Initializing Video.js with currentVideo:", currentVideo);
 
