@@ -15,7 +15,7 @@ export default function LiveVideoPlayer({ currentVideo }: VideoPlayerProps) {
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
   const [adsInitialized, setAdsInitialized] = useState(false);
 
-  const adTagUrl ="https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_preroll_skippable&sz=640x480&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+  const adTagUrl = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpostpod%26deployment%3Dgmf-js&cmsid=496&vid=short_onecue&correlator=`;
 
   // Step 1: Load the IMA SDK
   useEffect(() => {
@@ -71,15 +71,26 @@ export default function LiveVideoPlayer({ currentVideo }: VideoPlayerProps) {
         playerRef.current.one(startEvent, () => {
           console.log("Initializing Ad Display Container...");
           playerRef.current!.ima.initializeAdDisplayContainer();
+
+          // Play Preroll Ad
+          playerRef.current.ima.requestAds();
         });
 
-        // Log Ad events
+        // Listen for AdsReady event to confirm IMA is ready
+        playerRef.current.on("adsready", () => {
+          console.log("Ads are ready to be played.");
+          setAdsInitialized(true); // Set state indicating ads are ready
+        });
+
+        // Resume live stream after ads
         playerRef.current.on("ads-ad-ended", () => {
-          console.log("Ad ended. Resuming content...");
+          console.log("Ad ended. Resuming live stream...");
+          playerRef.current?.play();
         });
 
         playerRef.current.on("adserror", (error: any) => {
           console.error("Ad error occurred:", error);
+          playerRef.current?.play(); // Resume stream if ad errors out
         });
 
         setAdsInitialized(true);
@@ -91,31 +102,30 @@ export default function LiveVideoPlayer({ currentVideo }: VideoPlayerProps) {
     }
   }, [isSdkLoaded]);
 
-  // Step 3: Handle Video Source Changes and Reinitialize Ads
+  // Step 3: Update the video source and trigger ads
   useEffect(() => {
     if (!adsInitialized || !currentVideo || !playerRef.current) return;
 
     console.log("Updating video source to:", currentVideo);
 
-    // Update video source
+    // Update video source for live stream
     playerRef.current.src({
       src: currentVideo,
       type: "application/x-mpegURL", // HLS MIME type
     });
 
-    // Request new ads for the updated video
-    try {
-      playerRef.current.ima.changeAdTag(adTagUrl);
-      playerRef.current.ima.requestAds();
-      console.log("Ads reinitialized for new video.");
-    } catch (error) {
-      console.error("Error reinitializing ads:", error);
-    }
+    // Pause the video and request a preroll ad
+    playerRef.current.pause();
 
-    // Play the video after requesting ads
-    playerRef.current.play().catch((err) => {
-      console.error("Video play failed:", err);
-    });
+    try {
+      console.log("Reinitializing Ad Display Container for new source...");
+      playerRef.current.ima.initializeAdDisplayContainer(); // Ensure Ad Container is initialized
+      console.log("Playing preroll ad for updated video...");
+      playerRef.current.ima.requestAds(); // Request a new preroll ad
+    } catch (error) {
+      console.error("Error requesting ads for updated video:", error);
+      playerRef.current.play(); // Resume video if ads fail
+    }
   }, [currentVideo, adsInitialized]);
 
   // Step 4: Cleanup on Component Unmount
