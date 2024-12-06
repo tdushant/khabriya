@@ -41,6 +41,24 @@ export default function TVApp() {
     };
 
 
+    useEffect(() => {
+        const script = document.createElement("script");
+        script.src = "https://imasdk.googleapis.com/js/sdkloader/ima3.js";
+        script.async = true;
+        script.onload = () => {
+          console.log("Google IMA SDK successfully loaded:", window.google);
+        };
+        script.onerror = () => {
+          console.error("Failed to load Google IMA SDK");
+        };
+        document.body.appendChild(script);
+      
+        return () => {
+          document.body.removeChild(script);
+        };
+      }, [currentVideo]);
+      
+
     // const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
     // const API_AUTH_TOKEN = process.env.NEXT_PUBLIC_API_AUTH_TOKEN;
     const API_BASE_URL = 'https://api-houston.khabriya.in/api/v3';
@@ -135,7 +153,7 @@ export default function TVApp() {
         } catch (error) {
             console.error('Error fetching channels:', error);
         }
-    }, []);
+    }, [selectedChannelCategory]);
 
     useEffect(() => {
         fetchAllChannels();
@@ -295,6 +313,7 @@ export default function TVApp() {
                     <div className="flex-grow">
                         <LiveVideoPlayer
                             currentVideo={currentVideo}
+                            channelChanged={channelChanged}
                         />
                     </div>
 

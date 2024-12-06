@@ -2,7 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Head from 'next/head';
-import GoogleIMAScript from './GoogleIMAScript'; // Import the client-side component
+// import GoogleIMAScript from './GoogleIMAScript'; 
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -49,7 +49,7 @@ export default function RootLayout({
 				<meta name="twitter:card" content="summary_large_image" />
 			</Head>
 			<body className={inter.className}>
-				<GoogleIMAScript /> 
+				{/* <GoogleIMAScript />  */}
 				{children}
 			</body>
 		</html>

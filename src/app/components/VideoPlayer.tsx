@@ -6,61 +6,123 @@ import "videojs-ima"; // Google IMA plugin
 import "videojs-ima/dist/videojs.ima.css"; // IMA plugin styles
 
 interface VideoPlayerProps {
-  currentVideo: string;
+  currentVideo: string; // Video source URL
 }
 
 export default function LiveVideoPlayer({ currentVideo }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const playerRef = useRef<videojs.Player | null>(null);
-  const [isPlayerInitialized, setIsPlayerInitialized] = useState(false); // Track if the player has been initialized
+  const [isSdkLoaded, setIsSdkLoaded] = useState(false);
+  const [adsInitialized, setAdsInitialized] = useState(false);
 
+  const adTagUrl ="https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_preroll_skippable&sz=640x480&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
+
+  // Step 1: Load the IMA SDK
   useEffect(() => {
-    console.log("🚀 ~ LiveVideoPlayer ~ currentVideo:", currentVideo);
+    const script = document.createElement("script");
+    script.src = "https://imasdk.googleapis.com/js/sdkloader/ima3.js";
+    script.async = true;
 
-    if (!videoRef.current) {
-      console.warn("Video element is not mounted yet.");
-      return;
-    }
+    script.onload = () => {
+      console.log("Google IMA SDK successfully loaded.");
+      setIsSdkLoaded(true); // Mark SDK as loaded
+    };
 
-    // Initialize the player once when it has not been initialized yet
-    if (!isPlayerInitialized) {
-      console.log("🚀 ~ Initializing Video.js with currentVideo:", currentVideo);
+    script.onerror = () => {
+      console.error("Failed to load Google IMA SDK");
+    };
 
-      playerRef.current = videojs(videoRef.current, {
-        controls: true,
-        autoplay: true,
-        muted: true, // Required for autoplay
-        preload: "auto",
-        fluid: true, // Responsive video
-        techOrder: ["html5"], // Use only HTML5
-      });
+    document.body.appendChild(script);
 
-      playerRef.current.on("error", () => {
-        console.error("Video.js error:", playerRef.current?.error());
-      });
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
-      setIsPlayerInitialized(true);
-    }
-
-    // Update the video source dynamically when `currentVideo` changes
-    if (isPlayerInitialized && currentVideo) {
-      console.log("🚀 ~ Updating video source to:", currentVideo);
-
-      playerRef.current?.src({
-        src: currentVideo,
-        type: "application/x-mpegURL", // HLS MIME type
-      });
-
-      playerRef.current?.play().catch((err) => {
-        console.error("Video play failed:", err);
-      });
-    }
-  }, [currentVideo, isPlayerInitialized]);
-
+  // Step 2: Initialize the Video.js player and IMA plugin
   useEffect(() => {
-    // Cleanup on unmount
+    if (!isSdkLoaded || playerRef.current || !videoRef.current) return;
+
+    console.log("Initializing Video.js Player...");
+    playerRef.current = videojs(videoRef.current, {
+      controls: true,
+      autoplay: true,
+      muted: true, // Required for autoplay
+      preload: "auto",
+      fluid: true, // Responsive video
+      techOrder: ["html5"], // Use only HTML5
+    });
+
+    if (typeof window.google !== "undefined" && window.google.ima) {
+      try {
+        console.log("Initializing Google IMA Plugin...");
+        playerRef.current.ima({
+          adTagUrl,
+          adsRenderingSettings: {
+            enablePreloading: true, // Enable ad preloading
+          },
+        });
+
+        // Handle Ad Display Container Initialization
+        const startEvent = /iPhone|iPad|Android/i.test(navigator.userAgent)
+          ? "touchend"
+          : "click";
+
+        playerRef.current.one(startEvent, () => {
+          console.log("Initializing Ad Display Container...");
+          playerRef.current!.ima.initializeAdDisplayContainer();
+        });
+
+        // Log Ad events
+        playerRef.current.on("ads-ad-ended", () => {
+          console.log("Ad ended. Resuming content...");
+        });
+
+        playerRef.current.on("adserror", (error: any) => {
+          console.error("Ad error occurred:", error);
+        });
+
+        setAdsInitialized(true);
+      } catch (error) {
+        console.error("Error initializing IMA plugin:", error);
+      }
+    } else {
+      console.error("Google IMA SDK is not loaded or unavailable.");
+    }
+  }, [isSdkLoaded]);
+
+  // Step 3: Handle Video Source Changes and Reinitialize Ads
+  useEffect(() => {
+    if (!adsInitialized || !currentVideo || !playerRef.current) return;
+
+    console.log("Updating video source to:", currentVideo);
+
+    // Update video source
+    playerRef.current.src({
+      src: currentVideo,
+      type: "application/x-mpegURL", // HLS MIME type
+    });
+
+    // Request new ads for the updated video
+    try {
+      playerRef.current.ima.changeAdTag(adTagUrl);
+      playerRef.current.ima.requestAds();
+      console.log("Ads reinitialized for new video.");
+    } catch (error) {
+      console.error("Error reinitializing ads:", error);
+    }
+
+    // Play the video after requesting ads
+    playerRef.current.play().catch((err) => {
+      console.error("Video play failed:", err);
+    });
+  }, [currentVideo, adsInitialized]);
+
+  // Step 4: Cleanup on Component Unmount
+  useEffect(() => {
     return () => {
       if (playerRef.current) {
+        console.log("Disposing Video.js player...");
         playerRef.current.dispose();
         playerRef.current = null;
       }
