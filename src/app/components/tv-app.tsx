@@ -7,6 +7,7 @@ import { PlayCircle, ChevronLeft, ChevronRight, User } from 'lucide-react'
 import Image from 'next/image'
 import useEmblaCarousel from 'embla-carousel-react'
 import logoImg from "../../../public/logo.svg";
+import playstoreIcon from "../../image/playstore.svg";
 import axios from 'axios';
 import { Menu, X } from 'lucide-react'; 
 import LiveVideoPlayer from './VideoPlayer';
@@ -61,6 +62,7 @@ export default function TVApp() {
 
     // const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
     // const API_AUTH_TOKEN = process.env.NEXT_PUBLIC_API_AUTH_TOKEN;
+    const ACCOUNT_LINK ="https://myaccount.neotvapp.com"
     const API_BASE_URL = 'https://api-houston.khabriya.in/api/v3';
     const API_AUTH_TOKEN = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjFmZGQ3YjMzLWY2ZGItNDNlOC05NmM0LTFkNDMyYjc2NDI4NCIsIm1hY19hZGRyZXNzIjoibWFjX2FkZHJlc3MiLCJpYXQiOjE3MzE5NDE0NTF9.RrgsywJ4zNcTfER0Kd48bQZWCQoKO3GOmqYF0PBhPfyc1MOoXwTXVSQzYV1k-60Ch3sD8lWMXFOtC9rFIzOKSFD8hpzoQSzG07FpOLdtgYASuD49pBCk-1EsEOAArX3dWoumHe0C52Uw-NvABdDM1lLIMcQZxsh1DTA1SxMZUfGuPX5oMmdXdFKqyRX0LX8Xa_aDfvA7dhvyPsdqxyMXn_ieeJK9BzzW5NJYKW68gwpOAF6yjzJI-lDYQHKBeqsXSXEpL_vaESdLnZT-gBgvzuC6GgoMCwO8YVu99X7OWc-dDYvS35JJ9Oq0WePm-WBbRHe61iUD4UmsFZS4SCO_3A';
 
@@ -224,7 +226,7 @@ export default function TVApp() {
 
     return (
         <div className=" md:mx-6 mx-2 ">
-            <header className="flex justify-between items-center p-4 text-white header">
+            {/* <header className="flex justify-between items-center p-4 text-white header">
                 <div className="flex items-center">
                     <Link href={homeUrl} passHref>
                         <Image src={logoImg} alt="TV App Logo" width={100} height={40} />
@@ -245,16 +247,48 @@ export default function TVApp() {
                         <Menu className="h-6 w-6 text-black bg-white" /> // Visible menu icon
                     )}
                 </Button>
-            </header> 
+            </header>  */}
+
+
+            <header className="flex justify-between items-center md:px-8 px-4 py-4 text-white header">
+                <div className="flex items-center">
+                    <Link href={homeUrl} passHref>
+                        <Image src={logoImg} alt="TV App Logo" width={140} height={40} className="logo" />
+                    </Link>
+                </div>
+                <Link href={ACCOUNT_LINK}>
+                <Button variant="outline" className="acc_btn btn bg-[var(--primary-color)] text-white  hover:text-white hidden md:flex"
+                    style={{ backgroundColor: 'var(--primary-color)' }}>
+                    <User className="mr-2 h-4 w-4" />
+                    My Account
+                </Button>
+                </Link>
+                <div className="flex justify-between items-center md:hidden">
+                    <Link href={homeUrl} passHref>
+                        <Image src={playstoreIcon} alt="TV App Logo" width={120} height={40} className="logo " />
+                    </Link>
+                    <Button
+                        variant="outline"
+                        className="md:hidden bg-white text-black toggle_btn"
+                        onClick={toggleMenu}
+                    >
+                        {isMenuOpen ? (
+                            <X className="h-6 w-6 text-black bg-white" />
+                        ) : (
+                            <Menu className="h-6 w-6 text-black bg-white toggle_btn" />
+                        )}
+                    </Button>
+                </div>
+            </header>
 
 
             {/* Mobile Menu: Slide in from the right */}
             <div
                 className={`${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-                    } fixed top-0 right-0 h-full w-3/4 bg-[var(--primary-color)] bg-opacity-80 p-4 transition-transform duration-300 ease-in-out md:hidden z-50`}
+                    } fixed top-0 right-0 h-full w-3/4 mobile_bg bg-opacity-80 p-4 transition-transform duration-300 ease-in-out md:hidden z_index`}
             >
                 <div className="flex justify-end ">
-                    <Button onClick={toggleMenu} variant="outline" className="text-white">
+                    <Button onClick={toggleMenu} variant="outline" className="text-white toggle_btn">
                         <X className="h-6 w-6 text-black bg-white" />
                     </Button>
                 </div>
@@ -324,7 +358,7 @@ export default function TVApp() {
                         <div className="overflow-hidden" ref={emblaRef}>
                             <div className="flex">
                                 {quick_watch.map((channel) => (
-                                    <div key={channel.id} className="flex-[0_0_25%] min-w-0 px-2">
+                                    <div key={channel.id} className="lg:flex-[0_0_18%] flex-[0_0_25%] min-w-0 px-2">
                                         <div className="p-2 text-center channels_image">
                                             <Image
                                                 src={channel.image}

@@ -133,6 +133,9 @@ body{
   width: 30px;
   height: 28px;
 }
+.z_index{
+  z-index: 10000 !important;
+}
 @media (max-width:767px) {
   .acc_btn{
     font-size: 12px;
