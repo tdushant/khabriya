@@ -24,6 +24,7 @@ export default function RootLayout({
 					href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap"
 					rel="stylesheet"
 				/>
+				<link href="https://unpkg.com/@videojs/themes/dist/forest/index.css" rel="stylesheet"/>
 				<meta property="og:locale" content="en_US" />
 				<meta property="og:type" content="website" />
 				<meta

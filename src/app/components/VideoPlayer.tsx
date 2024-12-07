@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import videojs from "video.js";
-import "video.js/dist/video-js.css"; // Video.js default styles
+// import "video.js/dist/video-js.css"; // Video.js default styles
+import '@videojs/themes/dist/forest/index.css';
+
 import "videojs-contrib-ads"; // Ads plugin
 import "videojs-ima"; // Google IMA plugin
 import "videojs-ima/dist/videojs.ima.css"; // IMA plugin styles
@@ -143,8 +145,8 @@ export default function LiveVideoPlayer({ currentVideo }: VideoPlayerProps) {
     <div data-vjs-player style={{ position: "relative" }}>
       <video
         ref={videoRef}
-        className="video-js vjs-default-skin"
-        style={{ width: "100%", height: "100%" }}
+        className="video-js vjs-theme-forest" 
+        controls preload="auto"
       >
         <p>Your browser does not support the video tag.</p>
       </video>

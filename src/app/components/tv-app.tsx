@@ -30,7 +30,7 @@ export default function TVApp() {
 
     const [currentVideo, setCurrentVideo] = useState("")
     const [currentChannel, setCurrentChannel] = useState('')
-    const [selectedChannelCategory, setSelectedChannelCategory] = useState('Punjabi')
+    const [selectedChannelCategory, setSelectedChannelCategory] = useState('Hindi')
     const [quick_watch, setquick_watch] = useState([])
     const [Categories, setCategories] = useState([])
     const [AllChannels, SetAllChannels] = useState([])
@@ -256,13 +256,19 @@ export default function TVApp() {
                         <Image src={logoImg} alt="TV App Logo" width={140} height={40} className="logo" />
                     </Link>
                 </div>
-                <Link href={ACCOUNT_LINK}>
-                <Button variant="outline" className="acc_btn btn bg-[var(--primary-color)] text-white  hover:text-white hidden md:flex"
-                    style={{ backgroundColor: 'var(--primary-color)' }}>
-                    <User className="mr-2 h-4 w-4" />
-                    My Account
-                </Button>
-                </Link>
+                <div className='flex items-center'>
+                    <Link href={homeUrl} passHref>
+                        <Image src={playstoreIcon} alt="TV App Logo" width={120} height={40} className="logo hidden md:flex" />
+                    </Link>
+                    <Link href={ACCOUNT_LINK}>
+                        <Button variant="outline" className="acc_btn btn bg-[var(--primary-color)] text-white  hover:text-white hidden md:flex"
+                            style={{ backgroundColor: 'var(--primary-color)' }}>
+                            <User className="mr-2 h-4 w-4" />
+                            My Account
+                        </Button>
+                    </Link>
+                </div>
+
                 <div className="flex justify-between items-center md:hidden">
                     <Link href={homeUrl} passHref>
                         <Image src={playstoreIcon} alt="TV App Logo" width={120} height={40} className="logo " />
@@ -308,11 +314,12 @@ export default function TVApp() {
                         {category.insert_language}
                     </span>
                 ))}
-                
+
                 <div className="my-4">
                     <Button
                         variant="outline"
-                        className="acc_btn btn bg-white text-black hover:bg-[var(--secondary-color)] hover:text-white w-full"
+                        className="acc_btn btn  text-white w-1/2 py-4"
+                        style={{ backgroundColor: 'var(--primary-color)' }}
                     >
                         <User className="mr-2 h-4 w-4" />
                         My Account
@@ -390,7 +397,7 @@ export default function TVApp() {
                         <Button
                             size="icon"
                             variant="outline"
-                            className="btn absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-transparent	 text-white hover:bg-transparent hover:text-white"
+                            className="btn_style btn absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-transparent	 text-white hover:bg-transparent hover:text-white"
                             onClick={scrollPrev}
                             disabled={!canScrollPrev}
                         >
@@ -400,7 +407,7 @@ export default function TVApp() {
                         <Button
                             size="icon"
                             variant="outline"
-                            className="btn absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-transparent	 text-white hover:bg-transparent hover:text-white"
+                            className="btn_style btn absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-transparent	 text-white hover:bg-transparent hover:text-white"
                             onClick={scrollNext}
                             disabled={!canScrollNext}
                         >
