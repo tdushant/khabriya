@@ -13,9 +13,10 @@ interface VideoPlayerProps {
 
 export default function LiveVideoPlayer({ currentVideo }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const playerRef = useRef<videojs.Player | null>(null);
+  const playerRef: any = useRef<videojs.Player | null>(null);
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
   const [adsInitialized, setAdsInitialized] = useState(false);
+  const [libLoaded, setLibLoaded] = useState(false);
 
   const adTagUrl = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpostpod%26deployment%3Dgmf-js&cmsid=496&vid=short_onecue&correlator=`;
 
@@ -29,7 +30,7 @@ export default function LiveVideoPlayer({ currentVideo }: VideoPlayerProps) {
       console.log("Google IMA SDK successfully loaded.");
       setIsSdkLoaded(true); // Mark SDK as loaded
     };
-
+    setLibLoaded(true);
     script.onerror = () => {
       console.error("Failed to load Google IMA SDK");
     };
@@ -118,16 +119,16 @@ export default function LiveVideoPlayer({ currentVideo }: VideoPlayerProps) {
 
     // Pause the video and request a preroll ad
     playerRef.current.pause();
-
-    try {
-      console.log("Reinitializing Ad Display Container for new source...");
-      playerRef.current.ima.initializeAdDisplayContainer(); // Ensure Ad Container is initialized
-      console.log("Playing preroll ad for updated video...");
-      playerRef.current.ima.requestAds(); // Request a new preroll ad
-    } catch (error) {
-      console.error("Error requesting ads for updated video:", error);
-      playerRef.current.play(); // Resume video if ads fail
-    }
+    console.log("🚀 ~ useEffect ~ playerRef.current?.ima:", playerRef.current?.ima)
+      try {
+        console.log("Reinitializing Ad Display Container for new source...");
+        playerRef.current?.ima?.initializeAdDisplayContainer(); // Ensure Ad Container is initialized
+        console.log("Playing preroll ad for updated video...");
+        playerRef.current?.ima?.requestAds(); // Request a new preroll ad
+      } catch (error) {
+        // console.error("Error requesting ads for updated video:", error);
+        playerRef.current.play(); // Resume video if ads fail
+      }
   }, [currentVideo, adsInitialized]);
 
   // Step 4: Cleanup on Component Unmount
@@ -145,7 +146,7 @@ export default function LiveVideoPlayer({ currentVideo }: VideoPlayerProps) {
     <div data-vjs-player style={{ position: "relative" }}>
       <video
         ref={videoRef}
-        className="video-js vjs-theme-forest" 
+        className="video-js vjs-theme-forest"
         controls preload="auto"
       >
         <p>Your browser does not support the video tag.</p>
